@@ -1,6 +1,6 @@
 # Movie Data Project  
 
-Gets information about movies seen by used then crunchs it to extract interesting things.  
+Gets information about seen movies then crunchs it to extract interesting things.  
 
 ## Language and libraries
 

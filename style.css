@@ -8,6 +8,27 @@ h1 {
     margin-left: 20px;
 }
 
+h2 {
+    color: black;
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.Info {
+	background-color: lightblue;
+	margin: 10px;
+	padding: 20px;
+}
+
+.Test {	
+	background-color: lightgrey;
+	margin: 10px;
+	padding: 20px;
+}
+
 .Note {
 	font-style: italic;
+	background-color: grey;
+	margin: 10px;
+	padding: 20px;
 }
