@@ -2,48 +2,46 @@ $(function() {
 
 	// Display JQuery status and other info.
 	$('#texteJQ').html('JQuery is RUNNING.');
-	$('#texteJQ').append("<br>");
 
-  $('#texteJQ').append("temp1 <br>");
-
-	// Airtable Info
-
-	// App ID or Base: appqgOIJurd9Tr0L4
-  var baseID = "appqgOIJurd9Tr0L4";
-
-  // API Key is read from file
+  // API Key for Airtable is read from file
   var apikeyfile = "apikey";
-  var apiKey;
-  var loadingkey = $('<div>');
 
-  //$("#texteJQ").load(apikeyfile);
-  //$("#texteJQ").load(apikeyfile, function(data){
-  loadingkey.load(apikeyfile, function(response, status){
-    apiKey= response;
-    $('#texteJQ').append(apiKey);
-    $('#texteJQ').append(status);
-    //alert("done loading");
+  getAirtableData(apikeyfile);
+  
+});
+
+
+// Reads the API Key in the specified file then launches the sendAirtableRequests function
+// that get the from Airtable API.
+function getAirtableData(filename){
+
+  var loadingkey = $('<div>');
+  // Loading the content of the given file
+  loadingkey.load(filename, function(response, status){
+    // When apikey is read from file, send API request to get the data
+    sendAirtableRequests(response);
   });
 
+}
 
+// Sends a GET request to the Airtable API
+function sendAirtableRequests(apiKey){
 
+  //$('#texteJQ').append("<br> function called with api key : " + apiKey + "<br>");
 
-  $('#texteJQ').append("blablabla");
-  $('#texteJQ').append(apiKey);
-  alert("api key wait -- temp");
+  // Airtable Info
+
+  // App ID or Base: appqgOIJurd9Tr0L4
+  var baseID = "appqgOIJurd9Tr0L4";
 
   // API URL
-	var apiURL = "https://api.airtable.com/v0/";
+  var apiURL = "https://api.airtable.com/v0/";
   // Table URL
   var tableURL = "/Table%201";
 
-  var readFile = "apikey.txt";
-
+  // Main get function, using Axios.js
 
   axios.get(
-    //"https://api.airtable.com/v0/appqgOIJurd9Tr0L4/Table%201",
-    //"https://api.airtable.com/v0/" + baseID + "/Table%201",
-    //"https://api.airtable.com/v0/" + baseID + "/Table%201" + "?maxRecords=3&view=Grid%20view",
 
     // Access the Table in the Base, and use the view "Grid View"
     apiURL + baseID + tableURL + "?view=Grid%20view",
@@ -53,85 +51,45 @@ $(function() {
     }).then(function(response) {
       // Handle the response data
 
-      $('#texteJQ').append("ok<br>");
-
-      //$('#texteJQ').append(JSON.stringify(response));
+      $('#texteJQ').append("<br>ok");
 
       parseBase(response);
 
       $('#texteJQ').append("<br>done");
-      //console.log(response.data);
 
     }).catch(function(error) {
       // Handle error cases
        $('#texteJQ').append("error<br>");
        $('#texteJQ').append(error);
-       //console.log(error.response.data);
-    });
-       
+    });  
 
-  
-});
+}
 
-
-
-
+// Uses the DATA from the Airtable API (JSON Object) to construct a classic JS Array
 function parseBase(response_data) {
 
-  //$('#texteJQ').append(JSON.stringify(response_data));
-  $('#texteJQ').append("<br>");
-
-
-  var myarray = [["A", "5", "ART"], ["B", "45", "POP"], ["F", "5", "TIP"]];
-
-  print2DArray(myarray, "#testarray");
-  
-  $('#testarray').append("<br>");
-
-  var JSobject = JSON.parse((JSON.stringify(response_data)));
-
-  //$('#testarray').append(response_data.records[0].id);
-  //$('#testarray').append(response_data.records[0].id);
-
-  //var maped_array = $.map(response_data, function(el) { return el });
-
-  var maped_array = Object.values(response_data.data.records[0].fields);
-
-  $('#testarray').append(maped_array);
-  $('#testarray').append("<br>");
-
-  print1DArray(maped_array, "#testarray");
-
-  $('#testarray').append("<br>");$('#testarray').append("<br>");
-
-
-
-  
+  // Get all the records in an Array like fashion.
   var full_unmaped_array = Object.values(response_data.data.records);
-  $('#testarray').append(full_unmaped_array.length);
+  // This cannot be used directly since the intresting data is in response_data.data.records[x].fields
+  // But is useful to get the number of records.
 
-  $('#testarray').append("<br>");$('#testarray').append("<br>");
+  //$('#testarray').append(full_unmaped_array.length); $('#testarray').append("<br>");
 
+  // Declare new array of correct length (first dimension)
   var full_maped_array = new Array(full_unmaped_array.length);
 
+  // Loop on all records to construct the 2nd dimension of the array with the content of .fields.
   for(i=0; i<full_unmaped_array.length; i++){
-
-    // var bob = Object.values(response_data.data.records[i].fields);
-    // print1DArray(bob, "#testarray");
-    // $('#testarray').append("<br>");
-
     full_maped_array[i]= Object.values(response_data.data.records[i].fields);
-
-
   }
 
+  // Print everything
   print2DArray(full_maped_array, "#testarray");
-
-
 
 }
 
 
+// Prints a Two-Dimensions Array
 function print2DArray(myarray, display_element_id){
 
   $(display_element_id).append("Table Content : <br>");
@@ -149,6 +107,7 @@ function print2DArray(myarray, display_element_id){
 
 }
 
+// Prints a One-Dimension Array
 function print1DArray(myarray, display_element_id){
 
   $(display_element_id).append("Table Content : <br>");
@@ -159,14 +118,3 @@ function print1DArray(myarray, display_element_id){
   })
 
 }
-
-
-
-
-
-
-
-
-
-
-
