@@ -7,13 +7,43 @@ $(function() {
   var apikeyfile = "apikey";
 
   // Display full base and get the size (returned by called functions)
-  //var full_base_length = getfullAirtableData(apikeyfile);
-  sendAirtableRequests(apikeyfile, function(full_base_length){
-    // Display total count in info div
+  getfullAirtableData(apikeyfile, function(full_base_length){
+    // Display total count in the corresponding info div
     $('#TotalCount').append(full_base_length);
   });
 
 
+  // $('h1').queue("operations", function(){
+  //   this.append("One");
+  //   var self = this;
+  //   setTimeout(function() {
+  //     $(self).dequeue("operations");
+  //   }, 1000);
+  // });
+
+  // $('h1').queue("operations", function(){
+  //   this.append("Two");
+  //   var self = this;
+  // });
+
+  $('h1').queue("operations", function(){
+    var self = this;
+    getApiKeyFromFile(apikeyfile, function(apikey){
+      var test = apikey
+      
+      $(self).dequeue("operations");
+      //alert(apikey);
+    });
+  });
+
+  $('h1').queue("operations", function(){
+    this.append("Two");
+    alert("test");
+    var self = this;
+  });
+
+
+ $('h1').dequeue("operations");
 
   
 });
@@ -28,7 +58,7 @@ function getApiKeyFromFile(filename, callback){
 }
 
 // Sends a GET request to the Airtable API
-function sendAirtableRequests(apikeyfile, callback){
+function getfullAirtableData(apikeyfile, callback){
 
   getApiKeyFromFile(apikeyfile, function(apiKey){
 
