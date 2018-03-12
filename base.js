@@ -8,95 +8,78 @@ $(function() {
 
   // Display full base and get the size (returned by called functions)
   //var full_base_length = getfullAirtableData(apikeyfile);
-  getfullAirtableData(apikeyfile, function(){
-    //alert(full_base_length);
-    alert("done");
+  sendAirtableRequests(apikeyfile, function(full_base_length){
+    // Display total count in info div
+    $('#TotalCount').append(full_base_length);
   });
 
-  // Display total count in info div
-  $('#TotalCount').append(full_base_length);
+
 
   
 });
 
-
-// function getApiKeyFromFile(filename){
-
-//   var loadingkey = $('<div>');
-//   // Loading the content of the given file
-//   loadingkey.load(filename, function(response, status){
-//     // When apikey is read from file, send API request to get the data
-//     //return sendAirtableRequests(response);
-//     callback(response);
-//   });
-
-// }
-
-
-// Reads the API Key in the specified file then launches the sendAirtableRequests function
-// that get the from Airtable API.
-function getfullAirtableData(filename){
-
+// Reads the API Key in the specified file and sends it back
+function getApiKeyFromFile(filename, callback){
   var loadingkey = $('<div>');
   // Loading the content of the given file
   loadingkey.load(filename, function(response, status){
-    // When apikey is read from file, send API request to get the data
-    return sendAirtableRequests(response);
+    callback(response);
+  });
+}
+
+// Sends a GET request to the Airtable API
+function sendAirtableRequests(apikeyfile, callback){
+
+  getApiKeyFromFile(apikeyfile, function(apiKey){
+
+    // Airtable App ID or Base: appqgOIJurd9Tr0L4
+    var baseID = "appqgOIJurd9Tr0L4";
+    // Airtable API URL
+    var apiURL = "https://api.airtable.com/v0/";
+    // Airtable Table URL
+    var tableURL = "/Table%201";
+
+    // Main get function, using Axios.js
+    axios.get(
+
+      // Access the Table in the Base, and use the view "Grid View"
+      //apiURL + baseID + tableURL + "?view=Grid%20view",
+      apiURL + baseID + tableURL,
+      { 
+          headers: {Authorization: "Bearer " + apiKey},
+          params: {
+            //maxRecords: 10,
+            view: "Grid view",
+            //filterByFormula: 'AND(Year > 2000, Vision = "NX")',
+          }
+
+      }).then(function(response) {
+        // Handle the response data
+
+        $('#texteJQ').append("<br>ok");
+
+        //var full_base_length = parseBase(response);
+        parseBase(response, function(full_base_length){
+
+          callback(full_base_length);
+          //alert(full_base_length);
+
+        });
+
+        $('#texteJQ').append("<br>done");
+
+      }).catch(function(error) {
+        // Handle error cases
+         $('#texteJQ').append("error<br>");
+         $('#texteJQ').append(error);
+      });  
+
   });
 
 }
 
-// Sends a GET request to the Airtable API
-function sendAirtableRequests(apiKey){
-
-  //$('#texteJQ').append("<br> function called with api key : " + apiKey + "<br>");
-
-  // Airtable Info
-
-  // App ID or Base: appqgOIJurd9Tr0L4
-  var baseID = "appqgOIJurd9Tr0L4";
-
-  // API URL
-  var apiURL = "https://api.airtable.com/v0/";
-  // Table URL
-  var tableURL = "/Table%201";
-
-  // Main get function, using Axios.js
-
-  axios.get(
-
-    // Access the Table in the Base, and use the view "Grid View"
-    //apiURL + baseID + tableURL + "?view=Grid%20view",
-    apiURL + baseID + tableURL,
-    { 
-        headers: {Authorization: "Bearer " + apiKey},
-        params: {
-          maxRecords: 10,
-          view: "Grid view",
-          filterByFormula: 'AND(Year > 2000, Vision = "NX")',
-        }
-
-    }).then(function(response) {
-      // Handle the response data
-
-      $('#texteJQ').append("<br>ok");
-
-      var full_base_length = parseBase(response);
-
-      $('#texteJQ').append("<br>done");
-
-    }).catch(function(error) {
-      // Handle error cases
-       $('#texteJQ').append("error<br>");
-       $('#texteJQ').append(error);
-    });  
-
-    return full_base_length;
-
-}
-
 // Uses the DATA from the Airtable API (JSON Object) to construct a classic JS Array
-function parseBase(response_data) {
+function parseBase(response_data, callback) {
 
   // Get all the records in an Array like fashion.
   var full_unmaped_array = Object.values(response_data.data.records);
@@ -116,7 +99,7 @@ function parseBase(response_data) {
   // Print everything
   print2DArray(full_maped_array, "#testarray");
 
-  return full_unmaped_array.length;
+  callback(full_unmaped_array.length);
 
 }
 
