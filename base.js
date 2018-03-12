@@ -6,20 +6,42 @@ $(function() {
   // API Key for Airtable is read from file
   var apikeyfile = "apikey";
 
-  getAirtableData(apikeyfile);
+  // Display full base and get the size (returned by called functions)
+  //var full_base_length = getfullAirtableData(apikeyfile);
+  getfullAirtableData(apikeyfile, function(){
+    //alert(full_base_length);
+    alert("done");
+  });
+
+  // Display total count in info div
+  $('#TotalCount').append(full_base_length);
+
   
 });
 
 
+// function getApiKeyFromFile(filename){
+
+//   var loadingkey = $('<div>');
+//   // Loading the content of the given file
+//   loadingkey.load(filename, function(response, status){
+//     // When apikey is read from file, send API request to get the data
+//     //return sendAirtableRequests(response);
+//     callback(response);
+//   });
+
+// }
+
+
 // Reads the API Key in the specified file then launches the sendAirtableRequests function
 // that get the from Airtable API.
-function getAirtableData(filename){
+function getfullAirtableData(filename){
 
   var loadingkey = $('<div>');
   // Loading the content of the given file
   loadingkey.load(filename, function(response, status){
     // When apikey is read from file, send API request to get the data
-    sendAirtableRequests(response);
+    return sendAirtableRequests(response);
   });
 
 }
@@ -44,16 +66,22 @@ function sendAirtableRequests(apiKey){
   axios.get(
 
     // Access the Table in the Base, and use the view "Grid View"
-    apiURL + baseID + tableURL + "?view=Grid%20view",
+    //apiURL + baseID + tableURL + "?view=Grid%20view",
+    apiURL + baseID + tableURL,
     { 
-        headers: { Authorization: "Bearer "+apiKey } 
+        headers: {Authorization: "Bearer " + apiKey},
+        params: {
+          maxRecords: 10,
+          view: "Grid view",
+          filterByFormula: 'AND(Year > 2000, Vision = "NX")',
+        }
 
     }).then(function(response) {
       // Handle the response data
 
       $('#texteJQ').append("<br>ok");
 
-      parseBase(response);
+      var full_base_length = parseBase(response);
 
       $('#texteJQ').append("<br>done");
 
@@ -62,6 +90,8 @@ function sendAirtableRequests(apiKey){
        $('#texteJQ').append("error<br>");
        $('#texteJQ').append(error);
     });  
+
+    return full_base_length;
 
 }
 
@@ -85,6 +115,8 @@ function parseBase(response_data) {
 
   // Print everything
   print2DArray(full_maped_array, "#testarray");
+
+  return full_unmaped_array.length;
 
 }
 
