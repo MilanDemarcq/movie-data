@@ -1,4 +1,14 @@
 
+//// GLOBAL VARIABLES
+
+ // Airtable App ID or Base: appqgOIJurd9Tr0L4
+  var baseID = "appqgOIJurd9Tr0L4";
+  // Airtable API URL
+  var apiURL = "https://api.airtable.com/v0/";
+  // Airtable Table URL
+  var tableURL = "/Table%201";
+
+
 //// MAIN
 
 $(function() {
@@ -8,10 +18,9 @@ $(function() {
 
   // API Key for Airtable is read from this file
   var apikeyfile = "apikey";
-
   // Null API Key var
   var apikey;
-
+ 
   // First, read the API Key from the local file it's stored in.
   $('h1').queue("operations", function(){
     var self = this;
@@ -22,15 +31,18 @@ $(function() {
   });
 
   // Once API Key is known, API calls can be made.
-
-  // Get full base from Airtable, display it and get the size
   $('h1').queue("operations", function(){
+
+    // Get full base from Airtable, display it and get the size
     getfullAirtableData(apikey, function(full_base_length){
       // Display total count in the corresponding info div
       $('#TotalCount').append(full_base_length);
     });
-  });
 
+    // VISION Stats
+    getVisionData(apikey)
+
+  });
 
   // Init the sequence of queued events
   $('h1').dequeue("operations");
@@ -40,6 +52,46 @@ $(function() {
 
 
 //// FUNCTIONS
+
+// Gets data about vision techniques
+function getVisionData(apikey){
+
+  //var mystring = "AND(Vision = \"NX\")";
+  var mystring = null;
+
+  // Main get function, using Axios.js
+  axios.get(
+
+    // Access the Table in the Base, and use the view "Grid View"
+    //apiURL + baseID + tableURL + "?view=Grid%20view",
+    apiURL + baseID + tableURL,
+    { 
+        headers: {Authorization: "Bearer " + apikey},
+        params: {
+          //maxRecords: 10,
+          view: "Grid view",
+          //filterByFormula: 'AND(Vision = "NX")',
+          filterByFormula: mystring,
+        }
+
+    }).then(function(response) {
+      // Handle the response data
+
+      $('#testarray').append("<br>--------------------<br>")
+      $('#texteJQ').append("<br>ok");
+      parseBase(response);
+
+    }).catch(function(error) {
+      // Handle error cases
+       $('#texteJQ').append("error<br>");
+       $('#texteJQ').append(error);
+    }
+  );  
+
+}
+
+//
+//function apiGet(apikey, params)
 
 ///////////////////////////////////////////////////////////////////
 // Reads the API Key in the specified file and sends it back
@@ -59,13 +111,6 @@ function getApiKeyFromFile(filename, callback){
 function getfullAirtableData(apikey, callback){
 ///////////////////////////////////////////////////////////////////
 
-  // Airtable App ID or Base: appqgOIJurd9Tr0L4
-  var baseID = "appqgOIJurd9Tr0L4";
-  // Airtable API URL
-  var apiURL = "https://api.airtable.com/v0/";
-  // Airtable Table URL
-  var tableURL = "/Table%201";
-
   // Main get function, using Axios.js
   axios.get(
 
@@ -83,17 +128,12 @@ function getfullAirtableData(apikey, callback){
     }).then(function(response) {
       // Handle the response data
 
-      $('#texteJQ').append("<br>ok");
-
-      //var full_base_length = parseBase(response);
       parseBase(response, function(full_base_length){
 
         callback(full_base_length);
         //alert(full_base_length);
 
       });
-
-      $('#texteJQ').append("<br>done");
 
     }).catch(function(error) {
       // Handle error cases
@@ -127,7 +167,7 @@ function parseBase(response_data, callback) {
   // Print everything
   print2DArray(full_maped_array, "#testarray");
 
-  callback(full_unmaped_array.length);
+   if(callback) callback(full_unmaped_array.length);
 
 }
 
