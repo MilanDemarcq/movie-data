@@ -13,22 +13,24 @@
 
 $(function() {
 
-	// Display JQuery status and other info.
+    // Display JQuery status and other info.
 	$('#texteJQ').html('JQuery is RUNNING.');
 
-  // API Key for Airtable is read from this file
-  var apikeyfile = "apikey";
-  // Null API Key var
-  var apikey;
+    // API Key for Airtable is read from this file
+    var apikeyfile = "apikey";
+    // Null API Key var
+    var apikey;
  
-  // First, read the API Key from the local file it's stored in.
-  $('h1').queue("operations", function(){
-    var self = this;
-    getApiKeyFromFile(apikeyfile, function(response){
-      apikey = response;
-      $(self).dequeue("operations");
+    // First, read the API Key from the local file it's stored in.
+    $('h1').queue("operations", function(){
+        var self = this;
+        getApiKeyFromFile(apikeyfile, function(response){
+            apikey = response;
+            $(self).dequeue("operations");
+        });
     });
-  });
+
+    // TODO INDENT THAT SHIT
 
   // Once API Key is known, API calls can be made.
   $('h1').queue("operations", function(){
@@ -56,42 +58,41 @@ $(function() {
 // Gets data about vision techniques
 function getVisionData(apikey){
 
-  //var mystring = "AND(Vision = \"NX\")";
-  var mystring = null;
+  apiGetwFormula(apikey, "AND(Vision = \"NX\")", function(response_data){
 
-  // Main get function, using Axios.js
+     parseBase(response_data, "#testarray2");
+
+  });
+
+}
+
+//
+function apiGetwFormula(apikey, formula, callback){
+
+  // Get function, using Axios.js
   axios.get(
 
     // Access the Table in the Base, and use the view "Grid View"
     //apiURL + baseID + tableURL + "?view=Grid%20view",
     apiURL + baseID + tableURL,
     { 
-        headers: {Authorization: "Bearer " + apikey},
-        params: {
-          //maxRecords: 10,
-          view: "Grid view",
-          //filterByFormula: 'AND(Vision = "NX")',
-          filterByFormula: mystring,
-        }
+      headers: {Authorization: "Bearer " + apikey},
+      params: {
+        // Filter using the formula in parameter
+        filterByFormula: formula,
+      }
 
-    }).then(function(response) {
-      // Handle the response data
-
-      $('#testarray').append("<br>--------------------<br>")
-      $('#texteJQ').append("<br>ok");
-      parseBase(response);
-
-    }).catch(function(error) {
-      // Handle error cases
-       $('#texteJQ').append("error<br>");
-       $('#texteJQ').append(error);
     }
-  );  
+  ).then(function(response) {
+    // Send data back to callback
+    callback(response);
+
+  }).catch(function(error) {
+    // Handle error cases
+    $('#texteJQ').append(error);
+  });  
 
 }
-
-//
-//function apiGet(apikey, params)
 
 ///////////////////////////////////////////////////////////////////
 // Reads the API Key in the specified file and sends it back
@@ -128,7 +129,7 @@ function getfullAirtableData(apikey, callback){
     }).then(function(response) {
       // Handle the response data
 
-      parseBase(response, function(full_base_length){
+      parseBase(response, "#testarray", function(full_base_length){
 
         callback(full_base_length);
         //alert(full_base_length);
@@ -146,7 +147,7 @@ function getfullAirtableData(apikey, callback){
 /////////////////////////////////////////////////////////////////////////////////////
 // Uses the DATA from the Airtable API (JSON Object) to construct a classic JS Array
 // and print it.
-function parseBase(response_data, callback) {
+function parseBase(response_data, parselocation, callback) {
 /////////////////////////////////////////////////////////////////////////////////////
 
   // Get all the records in an Array like fashion.
@@ -165,7 +166,7 @@ function parseBase(response_data, callback) {
   }
 
   // Print everything
-  print2DArray(full_maped_array, "#testarray");
+  print2DArray(full_maped_array, parselocation);
 
    if(callback) callback(full_unmaped_array.length);
 
