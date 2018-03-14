@@ -42,6 +42,9 @@ $(function() {
         // VISION Stats
         getVisionData(apikey);
 
+        // Rating Stats
+        getRatingData(apikey);
+
     });
 
 
@@ -54,21 +57,53 @@ $(function() {
 
 //// FUNCTIONS
 
+///////////////////////////////////
+// Get rating data
+function getRatingData(apikey){
+///////////////////////////////////
+
+    // Get full base
+    // Could be improved by getting only the Note fields (field API parameter)
+    apiGetwFormula(apikey, "", function(response_data){
+
+        // Init vars and get total number of records
+        var count = response_data.data.records.length;
+        var rsum = 0;
+
+        // Sum up the ratings
+        for (i=0; i<count; i++){
+            var temp = Object.values(response_data.data.records[i].fields);
+            rsum+=temp[1];
+        }
+
+        // Get mean
+        mean_rating = rsum/count;
+
+        $('#RatingStats div:first').append(mean_rating);
+
+    });
+
+}
+
+
 //////////////////////////////////////////
 // Gets data about vision techniques
 function getVisionData(apikey){
 //////////////////////////////////////////
 
+    // Array contains the type of vision
     var visiontypesarray = ["NX", "CN", "ST", "DL", "TV", "AU"];
 
     $('#VisionStats div').each(function(index){
 
         var self = this;
+        // Create FilterbyFormula for each type in array
         var formula ="AND(Vision = \"" + visiontypesarray[index] + "\")";
 
+        // Get all records that match formula and count total records
         apiGetwFormula(apikey, formula, function(response_data){
-            var NXcount = response_data.data.records.length;
-            $(self).append(NXcount);
+            var count = response_data.data.records.length;
+            $(self).append(count);
         });
 
     });
