@@ -14,7 +14,7 @@ var tableURL = "/Table%201";
 $(function() {
 
     // Display JQuery status and other info.
-	$('#texteJQ').html('JQuery is RUNNING.');
+	$('#texteJQ').html('JQuery is RUNNING. <br>');
 
     // API Key for Airtable is read from this file
     var apikeyfile = "apikey";
@@ -39,8 +39,8 @@ $(function() {
             $('#TotalCount').append(full_base_length);
         });
 
-    // VISION Stats
-    getVisionData(apikey)
+        // VISION Stats
+        getVisionData(apikey);
 
     });
 
@@ -54,15 +54,25 @@ $(function() {
 
 //// FUNCTIONS
 
+//////////////////////////////////////////
 // Gets data about vision techniques
 function getVisionData(apikey){
+//////////////////////////////////////////
 
-    apiGetwFormula(apikey, "AND(Vision = \"NX\")", function(response_data){
+    var visiontypesarray = ["NX", "CN", "ST", "DL", "TV", "AU"];
 
-        parseBase(response_data, "#testarray2");
+    $('#VisionStats div').each(function(index){
+
+        var self = this;
+        var formula ="AND(Vision = \"" + visiontypesarray[index] + "\")";
+
+        apiGetwFormula(apikey, formula, function(response_data){
+            var NXcount = response_data.data.records.length;
+            $(self).append(NXcount);
+        });
 
     });
-
+    
 }
 
 
