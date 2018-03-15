@@ -76,3 +76,12 @@ h2 {
 	padding-right: 5px;
 	padding-left: 5px;
 }
+
+.testbar rect {
+	fill: #F0F0F0;
+	shape-rendering: crispEdges;
+}
+
+.testbar text {
+	fill: #333333;
+}

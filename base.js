@@ -99,18 +99,25 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $('#RatingStats div:nth-of-type(' + index + ')').append(ratingcountarray[i]);
         }
 
-        // Building chart with D3 using basic divs
+        // Building chart with D3 using basic divs     
+
+        // Scale init for a 500px width graph
+        var x_scale = d3.scaleLinear().domain([0, d3.max(ratingcountarray)]).range([0, 500]);
+
+        // Take the data in "ratingcountarray" and create the barchart with div's
         // Chart is inside #ratingbarchart div of class .barchart
-         d3.select("#ratingbarchart")
+        d3.select("#ratingbarchart")
         .selectAll("div")
         .data(ratingcountarray)
             .enter()
             .append("div")
-            .style("width", function(d) { if(d==0){return 8 + "px"}else{return d*10*2 + "px"}; })
+            .style("width", function(d) {if(d==0){return 8 + "px"}else{return x_scale(d) + "px"}; })
+            //.text(function(d) { return "★" + d; });
             .text(function(d) { return d; });
 
-    });
 
+
+    });
 
 }
 
@@ -136,6 +143,25 @@ function getVisionData(apikey){
         });
 
     });
+
+    // D3 test
+
+    var data = [4, 18, 6, 12];
+
+    var width = 420, barHeight = 20;
+
+    var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width]);
+
+    var chart = d3.select("#visionsbarchart").attr("width", width).attr("height", (barHeight+2) * data.length);
+
+    var bar = chart.selectAll("g").data(data).enter()
+        .append("g")
+        .attr("transform", function(d, i) { return "translate(0," + (i * (barHeight+2)) + ")"; });
+
+    bar.append("rect").attr("width", x).attr("height", barHeight - 1);
+
+    bar.append("text").attr("x", function(d) { return x(d) - 20; }).attr("y", barHeight / 2).attr("dy", ".35em").text(function(d) { return d; });
+
     
 }
 
