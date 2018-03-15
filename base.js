@@ -64,22 +64,38 @@ function getRatingData(apikey){
 
     // Get full base
     // Could be improved by getting only the Note fields (field API parameter)
-    apiGetwFormula(apikey, "", function(response_data){
+    airtableApiGet(apikey, "", "", function(response_data){
 
         // Init vars and get total number of records
         var count = response_data.data.records.length;
         var rsum = 0;
 
+        // Array to compute count of each rating
+        var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
         // Sum up the ratings
         for (i=0; i<count; i++){
+
+            // Get the object. Rating is temp[1] when all fields are received.
             var temp = Object.values(response_data.data.records[i].fields);
+
+            // Update array of rating counts
+            ratingcountarray[temp[1]-1]++;
+            // Update sum for average
             rsum+=temp[1];
         }
 
         // Get mean
         mean_rating = rsum/count;
 
+        // Print results: average
         $('#RatingStats div:first').append(mean_rating);
+
+        // Print results: rating count
+        for (i=0; i<count; i++){
+            var index = i+2;
+            $('#RatingStats div:nth-of-type(' + index + ')').append(ratingcountarray[i]);
+        }
 
     });
 
@@ -101,7 +117,7 @@ function getVisionData(apikey){
         var formula ="AND(Vision = \"" + visiontypesarray[index] + "\")";
 
         // Get all records that match formula and count total records
-        apiGetwFormula(apikey, formula, function(response_data){
+        airtableApiGet(apikey, "", formula, function(response_data){
             var count = response_data.data.records.length;
             $(self).append(count);
         });
@@ -113,7 +129,7 @@ function getVisionData(apikey){
 
 /////////////////////////////////////////////////////////////
 // Generic API Get function with filterbyformula parameter
-function apiGetwFormula(apikey, formula, callback){
+function airtableApiGet(apikey, fields, formula, callback){
 /////////////////////////////////////////////////////////////
 
     // Get function, using Axios.js
@@ -125,8 +141,9 @@ function apiGetwFormula(apikey, formula, callback){
     { 
         headers: {Authorization: "Bearer " + apikey},
         params: {
-        // Filter using the formula in parameter
-        filterByFormula: formula,
+            fields: fields,
+            // Filter using the formula in parameter
+            filterByFormula: formula,
         }
     }
     ).then(function(response) {
@@ -168,9 +185,10 @@ function getfullAirtableData(apikey, callback){
         { 
             headers: {Authorization: "Bearer " + apikey},
             params: {
-              //maxRecords: 10,
-              view: "Grid view",
-              //filterByFormula: 'AND(Year > 2000, Vision = "NX")',
+                //fields: ["Name"],
+                //maxRecords: 10,
+                view: "Grid view",
+                //filterByFormula: 'AND(Year > 2000, Vision = "NX")',
             }
 
         }
