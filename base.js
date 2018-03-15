@@ -62,6 +62,8 @@ $(function() {
 function getRatingData(apikey){
 ///////////////////////////////////
 
+var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
     // Get full base
     // Could be improved by getting only the Note fields (field API parameter)
     airtableApiGet(apikey, "", "", function(response_data){
@@ -71,7 +73,7 @@ function getRatingData(apikey){
         var rsum = 0;
 
         // Array to compute count of each rating
-        var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        //var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         // Sum up the ratings
         for (i=0; i<count; i++){
@@ -97,7 +99,18 @@ function getRatingData(apikey){
             $('#RatingStats div:nth-of-type(' + index + ')').append(ratingcountarray[i]);
         }
 
+        // Building chart with D3 using basic divs
+        // Chart is inside #ratingbarchart div of class .barchart
+         d3.select("#ratingbarchart")
+        .selectAll("div")
+        .data(ratingcountarray)
+            .enter()
+            .append("div")
+            .style("width", function(d) { if(d==0){return 8 + "px"}else{return d*10*2 + "px"}; })
+            .text(function(d) { return d; });
+
     });
+
 
 }
 

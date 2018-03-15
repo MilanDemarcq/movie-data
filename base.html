@@ -21,7 +21,7 @@
 
     <div id="BaseInfo" class="Info">
         <h2>GENERAL INFO ON BASE</h2>
-        <div id="BasicStats">
+        <div id="BasicStats" class="StatSpace">
             <div id="TotalCount"> Number of Movies : </div>
         </div>
     </div>
@@ -40,9 +40,10 @@
     </div>
 
     <div id="Ratings Info" class="Info">
+
         <h2>RATINGS INFO</h2>
 
-        <div id="RatingStats">
+        <div id="RatingStats" class="StatSpace">
             <div> Average Rating : </div>
             <br>
             <div> One star : </div>
@@ -56,6 +57,9 @@
             <div> Nine stars : </div>
             <div> Ten stars : </div>
         </div>
+        <div id="RatingGraphs" class="GraphSpace">
+            <div id=ratingbarchart class="barchart"></div>
+        </div>
     </div>
 
     <div id="testarray2" class="Test"></div>
@@ -63,8 +67,9 @@
 
     <div id="texteJQ" class="Note"></div>
 
-    <!--Adding jQuery and Axios libraries--> 
+    <!--Adding jQuery Axios and D3.js libraries--> 
     <script src="libs/jquery.js"></script>
+    <script src="libs/d3.js"></script>
     <script src="libs/axios.min.js"></script>
 
     <!--Main JS file (jQuery based)--> 
