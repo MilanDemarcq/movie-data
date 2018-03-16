@@ -102,6 +102,12 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         // Simple bar chart with D3.js
         createBarChart(500, 20, ratingcountarray, "#ratingbarchart");
 
+        // $('#RatingGraphs svg g').each(function(index){
+
+        //     $(this).append("<text y=\"10\" dy=\".3em\" x=\"0\" dx=\"-0.7em\">\"TEST\"</text>");
+
+        // });
+
     });
 
 }
@@ -155,11 +161,15 @@ function createBarChart(width, barheight, data, domid){
 
     // Simple bar chart with D3.js
 
+    //Additionnal info in array to display after bars
+    var info = "★★★★★★★★★★";
+
     // Create x scale
     var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width]);
 
     // Create chart and specify its size
-    var chart = d3.select(domid).attr("width", width).attr("height", (barheight+2) * data.length);
+    // Width is expendand to fit add. info
+    var chart = d3.select(domid).attr("width", width + 15 + info.length*15).attr("height", (barheight+2) * data.length);
 
     // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
@@ -179,7 +189,14 @@ function createBarChart(width, barheight, data, domid){
     .attr("x", function(d, i){return x(d)})
     .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
 
-
+    // Second text to add more info on each bar
+    bar.append("text")
+    .attr("class", "caption")
+    .text(info)
+    .attr("y", barheight / 2)
+    .attr("dy", ".3em")
+    .attr("x", function(d, i){return x(d)})
+    .attr("dx", ".6em");
 }
 
 

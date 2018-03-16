@@ -89,3 +89,7 @@ h2 {
 /*    text-anchor: middle;
     dominant-baseline: central;*/
 }
+
+text.caption{
+	fill: #F0F0F0;
+}
