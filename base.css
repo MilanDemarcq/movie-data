@@ -68,20 +68,24 @@ h2 {
 	padding: 20px;
 }
 
-.barchart div {
+/*.barchart div {
 	color: #333333;
 	background-color: #F0F0F0;
 	margin: 2px;
 	text-align: right;
 	padding-right: 5px;
 	padding-left: 5px;
-}
+}*/
 
-.testbar rect {
+.barchart rect {
 	fill: #F0F0F0;
 	shape-rendering: crispEdges;
 }
 
-.testbar text {
+.barchart text {
 	fill: #333333;
+	font-family: 'Times New Roman', serif;
+    font-size: 18px;
+/*    text-anchor: middle;
+    dominant-baseline: central;*/
 }

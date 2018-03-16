@@ -99,23 +99,8 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $('#RatingStats div:nth-of-type(' + index + ')').append(ratingcountarray[i]);
         }
 
-        // Building chart with D3 using basic divs     
-
-        // Scale init for a 500px width graph
-        var x_scale = d3.scaleLinear().domain([0, d3.max(ratingcountarray)]).range([0, 500]);
-
-        // Take the data in "ratingcountarray" and create the barchart with div's
-        // Chart is inside #ratingbarchart div of class .barchart
-        d3.select("#ratingbarchart")
-        .selectAll("div")
-        .data(ratingcountarray)
-            .enter()
-            .append("div")
-            .style("width", function(d) {if(d==0){return 8 + "px"}else{return x_scale(d) + "px"}; })
-            //.text(function(d) { return "★" + d; });
-            .text(function(d) { return d; });
-
-
+        // Simple bar chart with D3.js
+        createBarChart(500, 20, ratingcountarray, "#ratingbarchart");
 
     });
 
@@ -130,45 +115,77 @@ function getVisionData(apikey){
     // Array contains the type of vision
     var visiontypesarray = ["NX", "CN", "ST", "DL", "TV", "AU"];
 
-    $('#VisionStats div').each(function(index){
+    // Array containing counts of vision types
+    var visioncountarray = [0, 0, 0, 0, 0, 0];
 
-        var self = this;
-        // Create FilterbyFormula for each type in array
-        var formula ="AND(Vision = \"" + visiontypesarray[index] + "\")";
+    // Get table and treat it
+    airtableApiGet(apikey, "", "", function(response_data){
 
-        // Get all records that match formula and count total records
-        airtableApiGet(apikey, "", formula, function(response_data){
-            var count = response_data.data.records.length;
-            $(self).append(count);
+        var records_array = response_data.data.records;
+
+        $.map(records_array, function(val, i){
+
+           $.map(visiontypesarray, function(value, j){
+
+                if (value == records_array[i].fields.Vision){
+                    visioncountarray[j]++;
+                }
+
+           });
+
         });
 
+        $('#VisionStats div').each(function(index){
+            $(this).append(visioncountarray[index]);
+        });
+
+
+        // Simple bar chart with D3.js
+        createBarChart(420, 20, visioncountarray, "#visionsbarchart");
+
     });
+    
+}
 
-    // D3 test
+////////////////////////////////////////////////////////////////////////////////
+// Add a simple SVG Bar Chart using D3.js
+// Chart width, bar height is passed along with the data and DOM element ID.
+function createBarChart(width, barheight, data, domid){
+////////////////////////////////////////////////////////////////////////////////
 
-    var data = [4, 18, 6, 12];
+    // Simple bar chart with D3.js
 
-    var width = 420, barHeight = 20;
-
+    // Create x scale
     var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width]);
 
-    var chart = d3.select("#visionsbarchart").attr("width", width).attr("height", (barHeight+2) * data.length);
+    // Create chart and specify its size
+    var chart = d3.select(domid).attr("width", width).attr("height", (barheight+2) * data.length);
 
+    // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
         .append("g")
-        .attr("transform", function(d, i) { return "translate(0," + (i * (barHeight+2)) + ")"; });
+        .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2)) + ")"; });
 
-    bar.append("rect").attr("width", x).attr("height", barHeight - 1);
+    // In each g svg element (the chart's bars) add an svg rectangle.
+    bar.append("rect").attr("width", x).attr("height", barheight - 1);
 
-    bar.append("text").attr("x", function(d) { return x(d) - 20; }).attr("y", barHeight / 2).attr("dy", ".35em").text(function(d) { return d; });
+    bar.append("rect").attr("width", "3").attr("height", barheight - 1);
 
-    
+    // In each g svg element add the text
+    bar.append("text")
+    .text(function(d){return d})
+    .attr("y", barheight / 2)
+    .attr("dy", ".3em")
+    .attr("x", function(d, i){return x(d)})
+    .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
+
+
 }
 
 
 /////////////////////////////////////////////////////////////
 // Generic API Get function with filterbyformula parameter
-function airtableApiGet(apikey, fields, formula, callback){
+function airtableApiGet(apikey, myfields, formula, callback){
 /////////////////////////////////////////////////////////////
 
     // Get function, using Axios.js
@@ -180,7 +197,7 @@ function airtableApiGet(apikey, fields, formula, callback){
     { 
         headers: {Authorization: "Bearer " + apikey},
         params: {
-            fields: fields,
+            //fields: myfields,
             // Filter using the formula in parameter
             filterByFormula: formula,
         }
@@ -224,7 +241,7 @@ function getfullAirtableData(apikey, callback){
         { 
             headers: {Authorization: "Bearer " + apikey},
             params: {
-                //fields: ["Name"],
+                //fields: ['Vision'],
                 //maxRecords: 10,
                 view: "Grid view",
                 //filterByFormula: 'AND(Year > 2000, Vision = "NX")',
