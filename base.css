@@ -21,16 +21,19 @@ h1 {
 
 
 h2 {
-	background-color: #F0F0F0;
-    color: #333333;
     font-family: 'Times New Roman', serif;
     font-size: 20px;  
-    margin-top: 0px;
-    padding-top: 0px;
+}
+
+h2 .SectionTitle
+{
+	background-color: #F0F0F0;
+    color: #333333;
+    display: inline-block;
 }
 
 .Info {
-	background-color: #333333;
+	background-color: #404040;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 15px;
@@ -38,6 +41,7 @@ h2 {
 	width: 50%;
 	min-height: 300px;
 	padding-left: 20px;
+	padding-bottom: 15px;
 	color: #F0F0F0;
 	border-left: 4px solid #F0F0F0;
 	text-align: left;
@@ -52,7 +56,7 @@ h2 {
 .GraphSpace {
 	float: left;
 	width: 70%; 
-	padding-top: 20px;
+	padding-top: 0px;
 }
 
 .Test {	
@@ -67,15 +71,6 @@ h2 {
 	margin: 10px;
 	padding: 20px;
 }
-
-/*.barchart div {
-	color: #333333;
-	background-color: #F0F0F0;
-	margin: 2px;
-	text-align: right;
-	padding-right: 5px;
-	padding-left: 5px;
-}*/
 
 .barchart rect {
 	fill: #F0F0F0;
