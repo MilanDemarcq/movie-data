@@ -100,13 +100,11 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         }
 
         // Simple bar chart with D3.js
-        createBarChart(500, 20, ratingcountarray, "#ratingbarchart");
 
-        // $('#RatingGraphs svg g').each(function(index){
+        //Additionnal info in array to display after bars
+        var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
 
-        //     $(this).append("<text y=\"10\" dy=\".3em\" x=\"0\" dx=\"-0.7em\">\"TEST\"</text>");
-
-        // });
+        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", info_array);
 
     });
 
@@ -147,7 +145,7 @@ function getVisionData(apikey){
 
 
         // Simple bar chart with D3.js
-        createBarChart(420, 20, visioncountarray, "#visionsbarchart");
+        createBarChart(420, 20, visioncountarray, "#visionsbarchart", "");
 
     });
     
@@ -156,20 +154,28 @@ function getVisionData(apikey){
 ////////////////////////////////////////////////////////////////////////////////
 // Add a simple SVG Bar Chart using D3.js
 // Chart width, bar height is passed along with the data and DOM element ID.
-function createBarChart(width, barheight, data, domid){
+function createBarChart(width, barheight, data, domid, info_array){
 ////////////////////////////////////////////////////////////////////////////////
 
     // Simple bar chart with D3.js
 
     //Additionnal info in array to display after bars
-    var info = "★★★★★★★★★★";
+    //var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
+
+    // Get size of longest string in info_array
+    var info_max_length = 0;
+    for (i=0; i<info_array.length; i++){
+        if (info_array[i].length>info_max_length){info_max_length = info_array[i].length;}
+    }
 
     // Create x scale
-    var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width]);
+    // The max is the total width of the graph minus some size necessary to display info_array elements after the bars
+    var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width - info_max_length*10 - 5]);
 
     // Create chart and specify its size
-    // Width is expendand to fit add. info
-    var chart = d3.select(domid).attr("width", width + 15 + info.length*15).attr("height", (barheight+2) * data.length);
+    // Width is expendand to fit add. info NOT anymore
+    //var chart = d3.select(domid).attr("width", width + 15 + info.length*15).attr("height", (barheight+2) * data.length);
+    var chart = d3.select(domid).attr("width", width).attr("height", (barheight+2) * data.length);
 
     // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
@@ -189,10 +195,10 @@ function createBarChart(width, barheight, data, domid){
     .attr("x", function(d, i){return x(d)})
     .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
 
-    // Second text to add more info on each bar
+    // Second text to add more info after each bar
     bar.append("text")
     .attr("class", "caption")
-    .text(info)
+    .text(function(d,i){return info_array[i]})
     .attr("y", barheight / 2)
     .attr("dy", ".3em")
     .attr("x", function(d, i){return x(d)})
