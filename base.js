@@ -104,7 +104,7 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //Additionnal info in array to display after bars
         var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
 
-        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", info_array);
+        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", info_array, "Rating Distribution");
 
     });
 
@@ -145,7 +145,7 @@ function getVisionData(apikey){
 
 
         // Simple bar chart with D3.js
-        createBarChart(420, 20, visioncountarray, "#visionsbarchart", "");
+        createBarChart(420, 20, visioncountarray, "#visionsbarchart", "", "Vision Techniques Distribution");
 
     });
     
@@ -154,13 +154,13 @@ function getVisionData(apikey){
 ////////////////////////////////////////////////////////////////////////////////
 // Add a simple SVG Bar Chart using D3.js
 // Chart width, bar height is passed along with the data and DOM element ID.
-function createBarChart(width, barheight, data, domid, info_array){
+function createBarChart(width, barheight, data, domid, info_array, chart_title){
 ////////////////////////////////////////////////////////////////////////////////
 
     // Simple bar chart with D3.js
 
-    //Additionnal info in array to display after bars
-    //var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
+    // Title: assume vertical size if non-null title
+    var titlesize = 25;
 
     // Get size of longest string in info_array
     var info_max_length = 0;
@@ -175,17 +175,26 @@ function createBarChart(width, barheight, data, domid, info_array){
     // Create chart and specify its size
     // Width is expendand to fit add. info NOT anymore
     //var chart = d3.select(domid).attr("width", width + 15 + info.length*15).attr("height", (barheight+2) * data.length);
-    var chart = d3.select(domid).attr("width", width).attr("height", (barheight+2) * data.length);
+    var chart = d3.select(domid).attr("width", width).attr("height", ((barheight+2) * data.length + titlesize));
 
     // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
         .append("g")
-        .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2)) + ")"; });
+        .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2) + titlesize) + ")"; });
 
     // In each g svg element (the chart's bars) add an svg rectangle.
-    bar.append("rect").attr("width", x).attr("height", barheight - 1);
+    bar.append("rect").attr("width", x).attr("height", barheight - 1);  
 
-    bar.append("rect").attr("width", "3").attr("height", barheight - 1);
+    // Loop over the created rectangles
+    var rectselect = domid + " rect";
+    $(rectselect).each(function(){
+
+        // If rect is void, increase width 
+        if ($(this).attr("width")==0){
+            $(this).attr("width", 3);
+        }
+
+    });
 
     // In each g svg element add the text
     bar.append("text")
@@ -203,6 +212,15 @@ function createBarChart(width, barheight, data, domid, info_array){
     .attr("dy", ".3em")
     .attr("x", function(d, i){return x(d)})
     .attr("dx", ".6em");
+
+    // Add title
+    chart.append("text")
+    .text(chart_title)
+    .attr("class", "title")
+    .attr("y", 0)
+    .attr("dy", "1em")
+    .attr("x", width/2);
+
 }
 
 

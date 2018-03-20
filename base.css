@@ -77,6 +77,10 @@ h2 .SectionTitle
 	shape-rendering: crispEdges;
 }
 
+.barchart rect:hover{
+	fill: #A2482E;
+}
+
 .barchart text {
 	fill: #333333;
 	font-family: 'Times New Roman', serif;
@@ -88,4 +92,12 @@ h2 .SectionTitle
 text.caption{
 	fill: #F0F0F0;
 	font-size: 14px;
+}
+
+text.title{
+	fill: white;
+	font-family: 'Helvetica Neue', serif; 
+    font-size: 16px;
+    font-weight: lighter;
+	text-anchor: middle;
 }
