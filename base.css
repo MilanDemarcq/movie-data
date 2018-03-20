@@ -89,3 +89,15 @@ text.caption{
 	fill: #F0F0F0;
 	font-size: 14px;
 }
+
+.axis text {
+  font: 8px sans-serif;
+  fill: #F0F0F0;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #F0F0F0;
+  shape-rendering: crispEdges;
+}

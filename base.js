@@ -145,7 +145,7 @@ function getVisionData(apikey){
 
 
         // Simple bar chart with D3.js
-        createBarChart(420, 20, visioncountarray, "#visionsbarchart", "");
+        createBarChart(450, 20, visioncountarray, "#visionsbarchart", "");
 
     });
     
@@ -159,23 +159,34 @@ function createBarChart(width, barheight, data, domid, info_array){
 
     // Simple bar chart with D3.js
 
-    //Additionnal info in array to display after bars
-    //var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
-
     // Get size of longest string in info_array
     var info_max_length = 0;
     for (i=0; i<info_array.length; i++){
         if (info_array[i].length>info_max_length){info_max_length = info_array[i].length;}
     }
 
+    // Make room for axis with margin
+    var margin = {top: 20, right: 20, bottom: 20, left: 20};
+    width = width - margin.left - margin.right;
+    //var height = height - margin.top - margin.bottom;
+
+    var height = (barheight+2) * data.length;
+
     // Create x scale
     // The max is the total width of the graph minus some size necessary to display info_array elements after the bars
     var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width - info_max_length*10 - 5]);
 
     // Create chart and specify its size
-    // Width is expendand to fit add. info NOT anymore
-    //var chart = d3.select(domid).attr("width", width + 15 + info.length*15).attr("height", (barheight+2) * data.length);
-    var chart = d3.select(domid).attr("width", width).attr("height", (barheight+2) * data.length);
+    // Width and Height are modified to include the margins
+    var chart = d3.select(domid)
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", (barheight+2) * data.length + margin.top + margin.bottom)
+    // Add transform to make space for margins
+    .append("g")
+    .attr("transform", "translate(" + margin.left + ", 0");
+
+    // Create X Axis
+    var xAxis = d3.axisBottom().scale(x);
 
     // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
@@ -203,6 +214,18 @@ function createBarChart(width, barheight, data, domid, info_array){
     .attr("dy", ".3em")
     .attr("x", function(d, i){return x(d)})
     .attr("dx", ".6em");
+
+    // Adding X Axis to Chart
+    chart.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + 0 + "," + (height + 10) + ")")
+    .call(xAxis)
+    .append("text")
+        .attr("transform", "translate(100, 0")
+        .style("text-anchor", "start")
+        .text("Frequency");
+
+
 }
 
 
