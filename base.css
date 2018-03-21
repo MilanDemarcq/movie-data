@@ -73,16 +73,16 @@ h2 .SectionTitle
 }
 
 .barchart rect {
-	fill: #F0F0F0;
+	fill: #2A6180;
 	shape-rendering: crispEdges;
 }
 
 .barchart rect:hover{
-	fill: #A2482E;
+	fill: #DE8D47;
 }
 
 .barchart text {
-	fill: #333333;
+	fill: #F0F0F0;
 	font-family: 'Times New Roman', serif;
     font-size: 18px;
 /*    text-anchor: middle;
@@ -100,4 +100,9 @@ text.title{
     font-size: 16px;
     font-weight: lighter;
 	text-anchor: middle;
+}
+
+.barchart line{
+	stroke: #FFFFFF;
+	stroke-width: 2;
 }

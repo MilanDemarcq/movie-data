@@ -51,6 +51,18 @@ $(function() {
     // Init the sequence of queued events
     $('h1').dequeue("operations");
 
+
+
+
+    // Mouseover actions on barcharts rectangles
+    $('.GraphSpace').on("mouseover", "rect", function(){
+        //$(this).css("fill", "grey");
+    });
+
+    // Suppression du style au mouseout
+    $('.GraphSpace').on("mouseout", "rect", function(){
+        //$(this).css("fill", "red");         
+    });
   
 });
 
@@ -68,23 +80,31 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     // Could be improved by getting only the Note fields (field API parameter)
     airtableApiGet(apikey, "", "", function(response_data){
 
-        // Init vars and get total number of records
-        var count = response_data.data.records.length;
+        // Init vars and get total number of records to loop
+        var count = 0;
         var rsum = 0;
+        var total_length =  response_data.data.records.length;
 
         // Array to compute count of each rating
         //var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         // Sum up the ratings
-        for (i=0; i<count; i++){
+        for (i=0; i<total_length; i++){
 
-            // Get the object. Rating is temp[1] when all fields are received.
-            var temp = Object.values(response_data.data.records[i].fields);
+            // Contains the full record, rating will be record.Note, director will be record.Director
+            var record = response_data.data.records[i].fields;
 
-            // Update array of rating counts
-            ratingcountarray[temp[1]-1]++;
-            // Update sum for average
-            rsum+=temp[1];
+            // Check that rating is not undefined (empty fields are not returned by API)
+            if (record.Note != undefined){
+
+                // Update array of rating counts
+                ratingcountarray[record.Note-1]++;
+                // Update sum for average
+                rsum+=record.Note;
+                count++;
+
+            }
+
         }
 
         // Get mean
@@ -220,6 +240,14 @@ function createBarChart(width, barheight, data, domid, info_array, chart_title){
     .attr("y", 0)
     .attr("dy", "1em")
     .attr("x", width/2);
+
+    // Add axis-like lines
+    chart.append("line")
+    .attr("class", "axis-like")
+    .attr("x1", "0")
+    .attr("y1", (titlesize - 5))
+    .attr("x2", "0")
+    .attr("y2", (titlesize + (barheight+2) * data.length));
 
 }
 
