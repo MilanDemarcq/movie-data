@@ -87,6 +87,7 @@ h2 .SectionTitle
     font-size: 18px;
 /*    text-anchor: middle;
     dominant-baseline: central;*/
+    pointer-events: none;
 }
 
 text.caption{
