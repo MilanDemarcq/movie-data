@@ -57,11 +57,12 @@ $(function() {
     // Mouseover actions on barcharts rectangles
     $('.GraphSpace').on("mouseover", "rect", function(){
         //$(this).css("fill", "grey");
+       // $(this).parent().find('text[class=in-caption]').show();
     });
 
     // Suppression du style au mouseout
     $('.GraphSpace').on("mouseout", "rect", function(){
-        //$(this).css("fill", "red");         
+        //$(this).parent().find('text[class=in-caption]').hide();       
     });
   
 });
@@ -124,7 +125,7 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //Additionnal info in array to display after bars
         var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
 
-        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", info_array, "Rating Distribution");
+        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", info_array, "after", "Rating Distribution");
 
     });
 
@@ -165,7 +166,10 @@ function getVisionData(apikey){
 
 
         // Simple bar chart with D3.js
-        createBarChart(420, 20, visioncountarray, "#visionsbarchart", "", "Vision Techniques Distribution");
+
+        var info_array = ["Netflix", "Cinema", "Streaming", "Download", "Television", "Other"];
+
+        createBarChart(420, 20, visioncountarray, "#visionsbarchart", info_array, "inside", "Vision Techniques Distribution");
 
     });
     
@@ -174,12 +178,12 @@ function getVisionData(apikey){
 ////////////////////////////////////////////////////////////////////////////////
 // Add a simple SVG Bar Chart using D3.js
 // Chart width, bar height is passed along with the data and DOM element ID.
-function createBarChart(width, barheight, data, domid, info_array, chart_title){
+function createBarChart(width, barheight, data, domid, info_array, info_loc, chart_title){
 ////////////////////////////////////////////////////////////////////////////////
 
     // Simple bar chart with D3.js
 
-    // Title: assume vertical size if non-null title
+    // Title: assume vertical size of non-null title
     var titlesize = 25;
 
     // Get size of longest string in info_array
@@ -189,8 +193,14 @@ function createBarChart(width, barheight, data, domid, info_array, chart_title){
     }
 
     // Create x scale
-    // The max is the total width of the graph minus some size necessary to display info_array elements after the bars
-    var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width - info_max_length*10 - 5]);
+    if (info_loc == "after") {
+        // The max is the total width of the graph minus some size necessary to display info_array elements after the bars
+        var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width - info_max_length*10 - 5]);
+    }
+    else {
+        // The max is the total width of the graph
+        var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width]);
+    }
 
     // Create chart and specify its size
     // Width is expendand to fit add. info NOT anymore
@@ -200,10 +210,12 @@ function createBarChart(width, barheight, data, domid, info_array, chart_title){
     // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
         .append("g")
-        .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2) + titlesize) + ")"; });
+            .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2) + titlesize) + ")"; });
 
     // In each g svg element (the chart's bars) add an svg rectangle.
-    bar.append("rect").attr("width", x).attr("height", barheight - 1);  
+    bar.append("rect")
+        .attr("width", x)
+        .attr("height", barheight - 1);  
 
     // Loop over the created rectangles
     var rectselect = domid + " rect";
@@ -216,39 +228,87 @@ function createBarChart(width, barheight, data, domid, info_array, chart_title){
 
     });
 
-    // In each g svg element add the text
+    // In each g svg element add the value text
     bar.append("text")
-    .text(function(d){return d})
-    .attr("y", barheight / 2)
-    .attr("dy", ".3em")
-    .attr("x", function(d, i){return x(d)})
-    .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
+        .text(function(d){return d})
+        .attr("y", barheight / 2)
+        .attr("dy", ".3em")
+        .attr("x", function(d, i){return x(d)})
+        .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
 
-    // Second text to add more info after each bar
-    bar.append("text")
-    .attr("class", "caption")
-    .text(function(d,i){return info_array[i]})
-    .attr("y", barheight / 2)
-    .attr("dy", ".3em")
-    .attr("x", function(d, i){return x(d)})
-    .attr("dx", ".6em");
+    // Second text to add more info : located inside or after the bar
+
+    // After the bar
+    if (info_loc == "after"){
+        bar.append("text")
+        .attr("class", "caption")
+        .text(function(d,i){return info_array[i]})
+        .attr("y", barheight / 2)
+        .attr("dy", ".3em")
+        .attr("x", function(d, i){return x(d)})
+        .attr("dx", ".6em");
+    }
+
+    // Inside the bar (if width permits it, after if not)
+    else if (info_loc == "inside"){
+
+        // Add the text
+        bar.append("text")
+            .attr("class", "inside_info")
+            .attr("y", barheight / 2)
+            .attr("dy", ".3em")
+            .attr("x", "10")
+            .attr("text-anchor", "start")
+            .text(function(d,i){return info_array[i]})
+            // Get actual size of text and store it as an attribute
+            .attr("mylength", function(d,i){return this.getComputedTextLength();});
+
+        // Loop over the bars of chart
+         $(domid).find('g rect').each(function(index){   
+
+            // Get the text object
+            var mytext = $(this).parent().find('text.inside_info');
+            // Size of rectangle
+            var rect_width = parseInt($(this).attr("width"));
+            // Size of text
+            var text_width = parseInt(mytext.attr("mylength"));
+
+            // If text fits, ok, if not, move it.
+            if (text_width < rect_width){
+
+            } else {
+                //alert("Text : " + text_width + ".... Rect : " + rect_width);
+                // Move text
+                mytext.attr("x", rect_width + 10);
+                // Change class
+                mytext.attr("class", "caption");
+            }
+            
+            // When over, display text (default css was hidden)
+            $(this).parent().find('text.inside_info').css("visibility", "visible");
+
+         }); 
+
+
+    }
 
     // Add title
     chart.append("text")
-    .text(chart_title)
-    .attr("class", "title")
-    .attr("y", 0)
-    .attr("dy", "1em")
-    .attr("x", width/2);
+        .text(chart_title)
+        .attr("class", "title")
+        .attr("y", 0)
+        .attr("dy", "1em")
+        .attr("x", width/2);
 
     // Add axis-like lines
     chart.append("line")
-    .attr("class", "axis-like")
-    .attr("x1", "0")
-    .attr("y1", (titlesize - 5))
-    .attr("x2", "0")
-    .attr("y2", (titlesize + (barheight+2) * data.length));
+        .attr("class", "axis-like")
+        .attr("x1", "0")
+        .attr("y1", (titlesize - 5))
+        .attr("x2", "0")
+        .attr("y2", (titlesize + (barheight+2) * data.length));
 
+    
 }
 
 
