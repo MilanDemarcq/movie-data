@@ -51,20 +51,7 @@ $(function() {
     // Init the sequence of queued events
     $('h1').dequeue("operations");
 
-
-
-
-    // Mouseover actions on barcharts rectangles
-    $('.GraphSpace').on("mouseover", "rect", function(){
-        //$(this).css("fill", "grey");
-       // $(this).parent().find('text[class=in-caption]').show();
-    });
-
-    // Suppression du style au mouseout
-    $('.GraphSpace').on("mouseout", "rect", function(){
-        //$(this).parent().find('text[class=in-caption]').hide();       
-    });
-  
+ 
 });
 
 
@@ -205,7 +192,12 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
     // Create chart and specify its size
     // Width is expendand to fit add. info NOT anymore
     //var chart = d3.select(domid).attr("width", width + 15 + info.length*15).attr("height", (barheight+2) * data.length);
-    var chart = d3.select(domid).attr("width", width).attr("height", ((barheight+2) * data.length + titlesize));
+    var chart = d3.select(domid)
+        .attr("width", width)
+        .attr("height", ((barheight+2) * data.length + titlesize));
+
+    // Add info as attributes into chart to use them later // TODO maybe use data() instead
+    chart.attr("mybarheight", barheight).attr("mydatalength", data.length).attr("mytitlesize", titlesize);
 
     // Create the chart's bars
     var bar = chart.selectAll("g").data(data).enter()
@@ -284,7 +276,7 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
                 mytext.attr("class", "caption");
             }
             
-            // When over, display text (default css was hidden)
+            // When over, display text (default css visibility was hidden)
             $(this).parent().find('text.inside_info').css("visibility", "visible");
 
          }); 
@@ -307,6 +299,87 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
         .attr("y1", (titlesize - 5))
         .attr("x2", "0")
         .attr("y2", (titlesize + (barheight+2) * data.length));
+
+    // Dynamic behaviour
+
+    // Avoid multiple clicks or mouseouts
+    var already_clicked = false;
+
+    // On click actions on barcharts rectangles
+    $('.GraphSpace').unbind('click').on("click", "g", function(){
+
+        if (already_clicked == false) {
+
+            // Get the charts info values that are stored as attributes in the svg element
+            var mybarheight = parseInt($(this).parent().attr("mybarheight"));
+            var mydatalength = parseInt($(this).parent().attr("mydatalength"));
+            var mytitlesize = parseInt($(this).parent().attr("mytitlesize"));
+
+            // Temp style
+            $(this).children('rect').css("fill", "grey");
+
+            // Increase rectangle size by barheight
+            $(this).children('rect').attr("height", mybarheight*2 - 1);
+
+            // All following groups are added a transform to translate in y by barheight
+            $(this).nextAll('g').attr("transform", function(d){
+                return this.getAttribute("transform") + "translate(0," + mybarheight + ")";
+            });
+
+            // The graph is expanded by barheight
+            $(this).parent().attr("height", ((mybarheight+2) * mydatalength + mytitlesize + mybarheight));
+
+            // The line is expanded by barheight
+            $(this).parent().find('line').attr("y2", (mytitlesize + (mybarheight+2) * mydatalength + mybarheight));
+
+            already_clicked = true;
+
+        }       
+
+    });
+
+    // Mouseover actions on barcharts rectangles
+    $('.GraphSpace').on("mouseover", "rect", function(){
+        //$(this).css("fill", "grey");
+    });
+
+    // Mouseout actions
+    $('.GraphSpace').on("mouseout", "g", function(){   
+        //
+
+        // Cancel click actions on rectangles
+
+        if (already_clicked==true){
+
+            // Get the charts info values that are stored as attributes in the svg element
+            var mybarheight = parseInt($(this).parent().attr("mybarheight"));
+            var mydatalength = parseInt($(this).parent().attr("mydatalength"));
+            var mytitlesize = parseInt($(this).parent().attr("mytitlesize"));
+
+            // Temp style
+            //$(this).children('rect').css("fill", "red");
+            $(this).children('rect').removeAttr("style");
+
+            // Back to standard rect size
+            $(this).children('rect').attr("height", mybarheight - 1);
+
+            // All following groups are added an inverting transform translate
+            $(this).nextAll('g').attr("transform", function(d){
+                return this.getAttribute("transform") + "translate(0,-" + mybarheight + ")";
+            });
+
+            // The graph is back to standard (reduced by barheight)
+            $(this).parent().attr("height", ((mybarheight+2) * mydatalength + mytitlesize));
+
+            // The line is back to standard (reduced by barheight)
+            $(this).parent().find('line').attr("y2", (mytitlesize + (mybarheight+2) * mydatalength));
+
+            // Reset already clicked
+            already_clicked = false;
+
+        }
+
+    });
 
     
 }
