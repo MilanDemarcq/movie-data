@@ -99,13 +99,11 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         mean_rating = rsum/count;
 
         // Print results: average
-        $('#RatingStats div:first').append(mean_rating);
+        $('#RatingStats div:first').append(mean_rating).append(" / 10");
 
-        // Print results: rating count
-        for (i=0; i<count; i++){
-            var index = i+2;
-            $('#RatingStats div:nth-of-type(' + index + ')').append(ratingcountarray[i]);
-        }
+        // Print results on stars
+        var star_percent = Math.round(mean_rating*10);
+        $('#av_stars').attr("style", "width: " + star_percent + "%");
 
         // Simple bar chart with D3.js
 
@@ -147,9 +145,9 @@ function getVisionData(apikey){
 
         });
 
-        $('#VisionStats div').each(function(index){
-            $(this).append(visioncountarray[index]);
-        });
+        // $('#VisionStats div').each(function(index){
+        //     $(this).append(visioncountarray[index]);
+        // });
 
 
         // Simple bar chart with D3.js

@@ -29,14 +29,14 @@
     <div id="VisionInfo" class="Info">
         <h2><span class="SectionTitle"> VISION INFO </span></h2>
 
-        <div id="VisionStats" class="StatSpace">
+<!--         <div id="VisionStats" class="StatSpace">
             <div> Netflix : </div>
             <div> Theatre : </div>
             <div> Streaming : </div>
             <div> Download : </div>
             <div> TV : </div>
             <div> Other : </div>
-        </div>
+        </div> -->
 
 
         <div id="VisionGraphs" class="GraphSpace">
@@ -49,18 +49,16 @@
         <h2><span class="SectionTitle"> RATINGS INFO </span></h2>
 
         <div id="RatingStats" class="StatSpace">
-            <div> Average Rating : </div>
-            <br>
-            <div> One star : </div>
-            <div> Two stars : </div>
-            <div> Three stars: </div>
-            <div> Four stars : </div>
-            <div> Five stars : </div>
-            <div> Six stars : </div>
-            <div> Seven stars : </div>
-            <div> Eight stars : </div>
-            <div> Nine stars : </div>
-            <div> Ten stars : </div>
+
+            <div id="verboserating"> Average Rating : </div>
+            
+            <div class="starsrating">
+                <div id="av_stars" class="stars-in" style="width: 0%"> <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span> </div>
+                <div class="stars-out"> <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span> </div>
+            </div>
+
+
+
         </div>
         <div id="RatingGraphs" class="GraphSpace">
             <svg id=ratingbarchart class="barchart"></svg>
