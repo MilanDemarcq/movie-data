@@ -103,7 +103,11 @@ var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         // Print results on stars
         var star_percent = Math.round(mean_rating*10);
-        $('#av_stars').attr("style", "width: " + star_percent + "%");
+
+        //$('#av_stars').attr("style", "width: " + star_percent + "%");
+        $('#av_stars').animate({
+            width: star_percent+"%"
+        }, 2000);
 
         // Simple bar chart with D3.js
 
@@ -203,101 +207,117 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
             .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2) + titlesize) + ")"; });
 
     // In each g svg element (the chart's bars) add an svg rectangle.
+    // When construction is over (with transition), call the annotateGraph() function to complete graph.
     bar.append("rect")
+        .attr("height", barheight - 1)
+        .attr("width", 0)
+        .transition()
+        .delay(function(d, i){ return i*50; })
+        .duration(1000)
         .attr("width", x)
-        .attr("height", barheight - 1);  
+        .on("end", function(d,i){
+            if (i==info_array.length - 1) {
+                //alert("done");
+                annotateGraph();
+            }
+        });
 
-    // Loop over the created rectangles
-    var rectselect = domid + " rect";
-    $(rectselect).each(function(){
+    // Adds everything in the graph after the bars
+    function annotateGraph(){
 
-        // If rect is void, increase width 
-        if ($(this).attr("width")==0){
-            $(this).attr("width", 3);
-        }
+        // Loop over the created rectangles
+        var rectselect = domid + " rect";
+        $(rectselect).each(function(){
 
-    });
+            // If rect is void, increase width 
+            if ($(this).attr("width")==0){
+                $(this).attr("width", 3);
+            }
 
-    // In each g svg element add the value text
-    bar.append("text")
-        .text(function(d){return d})
-        .attr("y", barheight / 2)
-        .attr("dy", ".3em")
-        .attr("x", function(d, i){return x(d)})
-        .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
+        });
 
-    // Second text to add more info : located inside or after the bar
-
-    // After the bar
-    if (info_loc == "after"){
+        // In each g svg element add the value text
         bar.append("text")
-        .attr("class", "caption")
-        .text(function(d,i){return info_array[i]})
-        .attr("y", barheight / 2)
-        .attr("dy", ".3em")
-        .attr("x", function(d, i){return x(d)})
-        .attr("dx", ".6em");
-    }
-
-    // Inside the bar (if width permits it, after if not)
-    else if (info_loc == "inside"){
-
-        // Add the text
-        bar.append("text")
-            .attr("class", "inside_info")
+            .text(function(d){return d})
             .attr("y", barheight / 2)
             .attr("dy", ".3em")
-            .attr("x", "10")
-            .attr("text-anchor", "start")
+            .attr("x", function(d, i){return x(d)})
+            .attr("dx", function(d){return "-" + (0.2 + (0.5 * d.toString().length)) + "em"});
+
+        // Second text to add more info : located inside or after the bar
+
+        // After the bar
+        if (info_loc == "after"){
+            bar.append("text")
+            .attr("class", "caption")
             .text(function(d,i){return info_array[i]})
-            // Get actual size of text and store it as an attribute
-            .attr("mylength", function(d,i){return this.getComputedTextLength();});
+            .attr("y", barheight / 2)
+            .attr("dy", ".3em")
+            .attr("x", function(d, i){return x(d)})
+            .attr("dx", ".6em");
+        }
 
-        // Loop over the bars of chart
-         $(domid).find('g rect').each(function(index){   
+        // Inside the bar (if width permits it, after if not)
+        else if (info_loc == "inside"){
 
-            // Get the text object
-            var mytext = $(this).parent().find('text.inside_info');
-            // Size of rectangle
-            var rect_width = parseInt($(this).attr("width"));
-            // Size of text
-            var text_width = parseInt(mytext.attr("mylength"));
+            // Add the text
+            bar.append("text")
+                .attr("class", "inside_info")
+                .attr("y", barheight / 2)
+                .attr("dy", ".3em")
+                .attr("x", "10")
+                .attr("text-anchor", "start")
+                .text(function(d,i){return info_array[i]})
+                // Get actual size of text and store it as an attribute
+                .attr("mylength", function(d,i){return this.getComputedTextLength();});
 
-            // If text fits, ok, if not, move it.
-            if (text_width < rect_width){
+            // Loop over the bars of chart
+             $(domid).find('g rect').each(function(index){   
 
-            } else {
-                //alert("Text : " + text_width + ".... Rect : " + rect_width);
-                // Move text
-                mytext.attr("x", rect_width + 10);
-                // Change class
-                mytext.attr("class", "caption");
-            }
-            
-            // When over, display text (default css visibility was hidden)
-            $(this).parent().find('text.inside_info').css("visibility", "visible");
+                // Get the text object
+                var mytext = $(this).parent().find('text.inside_info');
+                // Size of rectangle
+                var rect_width = parseInt($(this).attr("width"));
+                // Size of text
+                var text_width = parseInt(mytext.attr("mylength"));
 
-         }); 
+                // If text fits, ok, if not, move it.
+                if (text_width < rect_width){
 
+                } else {
+                    //alert("Text : " + text_width + ".... Rect : " + rect_width);
+                    // Move text
+                    mytext.attr("x", rect_width + 10);
+                    // Change class
+                    mytext.attr("class", "caption");
+                }
+                
+                // When over, display text (default css visibility was hidden)
+                $(this).parent().find('text.inside_info').css("visibility", "visible");
 
-    }
+             }); 
 
-    // Add title
-    chart.append("text")
-        .text(chart_title)
-        .attr("class", "title")
-        .attr("y", 0)
-        .attr("dy", "1em")
-        .attr("x", width/2);
+        }
 
-    // Add axis-like lines
-    chart.append("line")
-        .attr("class", "axis-like")
-        .attr("x1", "0")
-        .attr("y1", (titlesize - 5))
-        .attr("x2", "0")
-        .attr("y2", (titlesize + (barheight+2) * data.length));
+        // Add title
+        chart.append("text")
+            .text(chart_title)
+            .attr("class", "title")
+            .attr("y", 0)
+            .attr("dy", "1em")
+            .attr("x", width/2);
 
+        // Add axis-like lines
+        chart.append("line")
+            .attr("class", "axis-like")
+            .attr("x1", "0")
+            .attr("y1", (titlesize - 5))
+            .attr("x2", "0")
+            .attr("y2", (titlesize + (barheight+2) * data.length));
+
+    } // End of annotateGraph subfunction
+
+    
     // Dynamic behaviour
 
     // Avoid multiple clicks or mouseouts
