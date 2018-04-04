@@ -69,6 +69,10 @@ h2 .SectionTitle
 	padding-top: 0px;*/
 }
 
+.GraphSpace svg {
+	margin-top: 10px;
+}
+
 /*Temporary test div*/
 
 .Test {	
@@ -86,7 +90,18 @@ h2 .SectionTitle
 	padding: 20px;
 }
 
-/*Charts: 
+/*Charts: general*/
+
+text.title{
+	fill: white;
+	font-family: 'Helvetica Neue', serif; 
+    font-size: 16px;
+    font-style: italic;
+    font-weight: lighter;
+	text-anchor: middle;
+}
+
+/* Bar Charts: 
 - rect (normal and hover) in barcharts
 - text in barcharts
 - text of class title
@@ -104,22 +119,13 @@ h2 .SectionTitle
 	fill: #DE8D47;
 }
 
-.barchart text {
+.barchart text:not(.title){
 	fill: #F0F0F0;
 	font-family: 'Times New Roman', serif;
-    font-size: 18px;
+    font-size: 16px;
 /*    text-anchor: middle;
     dominant-baseline: central;*/
     pointer-events: none;
-}
-
-text.title{
-	fill: white;
-	font-family: 'Helvetica Neue', serif; 
-    font-size: 16px;
-    font-style: italic;
-    font-weight: lighter;
-	text-anchor: middle;
 }
 
 text.caption{
@@ -131,11 +137,24 @@ text.inside_info{
 	font-size: 14px;
 	text-anchor: start;
 	visibility: hidden;
+/*	fill: #F0F0F0;*/
 }
 
 .barchart line{
 	stroke: #FFFFFF;
 	stroke-width: 2;
+}
+
+/*Pie Charts*/
+
+.pie-text{
+	font-size: 14px;
+	fill: #F0F0F0;
+}
+
+#VisionGraphs div{
+	margin: auto;
+    width: 80%;
 }
 
 /*Display average rating using stars*/

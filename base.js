@@ -154,11 +154,110 @@ function getVisionData(apikey){
         // });
 
 
-        // Simple bar chart with D3.js
+        // Create a bar chart
 
+        // Titles
         var info_array = ["Netflix", "Cinema", "Streaming", "Download", "Television", "Other"];
 
+        // Simple bar chart (function uses D3)
         createBarChart(420, 20, visioncountarray, "#visionsbarchart", info_array, "inside", "Vision Techniques Distribution");
+
+
+        // WIP ZONE
+
+        // Create a donut chart
+
+        // first a pie chart
+
+        var dataset = [
+            { name: 'This', percent: 60 },
+            { name: 'Thiiiiis', percent: 15 },
+            { name: 'That', percent: 25 }
+        ];
+
+        console.log(dataset);
+
+        console.log(info_array);
+        console.log(visioncountarray);
+
+        var totalvisions = 0;
+        for (i = 0; i < info_array.length; i++){
+            totalvisions += visioncountarray[i];
+        }
+
+        console.log(totalvisions);
+
+        var vision_array = new Array(info_array.length);
+        for (var i = 0; i < info_array.length; i++){
+            //vision_object[info_array[i]] = visioncountarray[i];
+            //vision_object[i].name = info_array[i];
+            //vision_object[i].value = visioncountarray[i];
+            vision_array[i] = {"name": info_array[i], "value": Math.round((visioncountarray[i]/totalvisions)*100)};
+        }
+
+        console.log(vision_array);
+
+        // Define chart's dimensions to be used later
+        var w=200,h=200;
+        // Compute circle radius to fit chart size (with 2 px margin)
+        var radius=(w-30)/2;
+
+        // Create pie chart
+        var pie=d3.pie()
+        .value(function(d){return d.value})
+        .sort(null);
+
+        // Create arc
+        var arc=d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius);
+
+        // Color scale : linear colors between to values
+        var mycolor = d3.scaleLinear()
+        .range(['#e75244','#2A6180']);
+
+        // Create SVG diagram
+        var mysvg=d3.select("#visonpiechart")
+        .attr("width", w)
+        .attr("height", h);
+
+        // The main group
+        var piegroup = mysvg.append('g')
+            // Set translate to point to the center of the chart
+            .attr("transform", "translate("+w/2+","+(h/2 + 10)+")");
+
+        // The pie elements
+        var path=piegroup.selectAll('path')
+        .data(pie(vision_array))
+        .enter()
+            .append('path')
+            .attr("d", arc)
+            .attr("fill", function(d, i){return mycolor(i)});
+
+        // Caption
+        var text=piegroup.selectAll('text')
+        .data(pie(vision_array))
+        .enter()
+            .append("text")
+                .attr("transform", function (d) {
+                    return "translate(" + arc.centroid(d) + ")";
+                })
+                .attr("text-anchor", "middle")
+                .attr("class", "pie-text")
+                .text(function(d){
+                    return d.data.name+" ("+d.data.value+"%)" ;
+                });
+
+        // Add title
+        mysvg.append("text")
+            .text("Distribution")
+            .attr("class", "title")
+            .attr("y", 0)
+            .attr("dy", "1em")
+            .attr("x", w/2);
+
+    // END WIP ZONE
+
 
     });
     
