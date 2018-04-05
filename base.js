@@ -196,9 +196,10 @@ function getVisionData(apikey){
         console.log(vision_array);
 
         // Define chart's dimensions to be used later
-        var w=220,h=220;
+        var w=300,h=300;
+        var chart_inner_margin = 100;
         // Compute circle radius to fit chart size (with 2 px margin)
-        var radius=(w-30)/2;
+        var radius=(w-chart_inner_margin)/2;
         var inner_radius = radius/2;
 
         // Create pie chart
@@ -227,7 +228,7 @@ function getVisionData(apikey){
         // The main group
         var piegroup = mysvg.append('g')
             // Set translate to point to the center of the chart
-            .attr("transform", "translate("+w/2+","+(h/2 + 10)+")");
+            .attr("transform", "translate("+w/2+","+(h/2)+")");
 
         // The pie elements
         var path=piegroup.selectAll('path')
@@ -275,6 +276,77 @@ function getVisionData(apikey){
                 .attr("y", 0)
                 .attr("dy", "1em")
                 .attr("x", w/2);
+
+
+            // Add a cool legend with lines pointing at arcs
+            var line=piegroup.selectAll('line')
+            .data(pie(vision_array))
+            .enter()
+                .append("line")
+                    .attr("transform", function (d) {
+                        // Go to centroid then extend to reach border
+                        //var c = arc.centroid(d);
+                        //console.log(d.startAngle);
+                        //console.log(d.endAngle);
+                        var teta = ((d.startAngle + d.endAngle)/2);
+                        //teta = d.endAngle;
+                        var r = radius;
+                        console.log(teta);
+                        var teta_deg = Math.round((teta*180)/Math.PI);
+                        console.log(Math.PI)
+                        console.log("angle: " + teta_deg);
+                        console.log(r);
+                        // Modified coordinates since d3 starts at 90° and goes clockwise
+                        var x = Math.round(r*Math.sin(teta));
+                        var y = -Math.round(r*Math.cos(teta));
+                        console.log(x);
+                        console.log(y);
+                        var rotation_angle;
+                        rotation_angle = teta_deg;
+                        return "translate(" + x + "," + y + ")" + "rotate(" + rotation_angle + ")";
+                        //return "translate(" + x + "," + y + ")";
+                        //return "translate(" + c[0]*1.5 +"," + c[1]*1.5 + ")";
+                        //return "translate(" + arc.centroid(d) + ")";
+                    })
+                    // .attr("transform", function(d) {
+                    //     var teta = ((d.startAngle + d.endAngle)/2);
+                    //     var teta_deg = Math.round((parseInt(teta)*180)/3.14156);
+                    //     return "rotate(" + teta_deg + ")";
+                    // })
+                    .attr("stroke", "white")
+                    .attr("stroke-width", 2)
+                    .attr("x1", "0")
+                    .attr("y1", "0")
+                    .attr("x2", "0")
+                    .attr("y2", "-50");
+
+
+            // // Add a cool legend with lines pointing at arcs
+            // var line=piegroup.selectAll('line')
+            // .data(pie(vision_array))
+            // .enter()
+            //     .append("text")
+            //         .text("yo");
+
+
+            // // Add a cool legend with lines pointing at arcs
+            // path.append("line")
+            //         .attr("class", "axis-like")
+            //         .attr("x1", "0")
+            //         .attr("y1", "0")
+            //         .attr("x2", "0")
+            //         .attr("y2", "50");
+
+
+
+
+        //                     // Add axis-like lines
+        // chart.append("line")
+        //     .attr("class", "axis-like")
+        //     .attr("x1", "0")
+        //     .attr("y1", (titlesize - 5))
+        //     .attr("x2", "0")
+        //     .attr("y2", (titlesize + (barheight+2) * data.length));
 
         };
         
