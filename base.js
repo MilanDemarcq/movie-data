@@ -278,76 +278,42 @@ function getVisionData(apikey){
                 .attr("x", w/2);
 
 
+
+
             // Add a cool legend with lines pointing at arcs
-            var line=piegroup.selectAll('line')
+
+            var mypath=piegroup.selectAll('mypath')
             .data(pie(vision_array))
             .enter()
-                .append("line")
-                    .attr("transform", function (d) {
-                        // Go to centroid then extend to reach border
-                        //var c = arc.centroid(d);
-                        //console.log(d.startAngle);
-                        //console.log(d.endAngle);
+                .append("path")
+                    //.attr("d", "M 0 0 L 10 10")
+                    .attr("d", function(d){
+                        // Get the angle (in rad) corresponding to the middle of each arc
                         var teta = ((d.startAngle + d.endAngle)/2);
-                        //teta = d.endAngle;
                         var r = radius;
-                        console.log(teta);
+                        // Convert to degrees
                         var teta_deg = Math.round((teta*180)/Math.PI);
-                        console.log(Math.PI)
-                        console.log("angle: " + teta_deg);
-                        console.log(r);
+                        // Polar to cartesian cordinates for origin
                         // Modified coordinates since d3 starts at 90° and goes clockwise
-                        var x = Math.round(r*Math.sin(teta));
-                        var y = -Math.round(r*Math.cos(teta));
-                        console.log(x);
-                        console.log(y);
-                        var rotation_angle;
-                        rotation_angle = teta_deg;
-                        return "translate(" + x + "," + y + ")" + "rotate(" + rotation_angle + ")";
-                        //return "translate(" + x + "," + y + ")";
-                        //return "translate(" + c[0]*1.5 +"," + c[1]*1.5 + ")";
-                        //return "translate(" + arc.centroid(d) + ")";
+                        var x0 = Math.round(r*Math.sin(teta));
+                        var y0 = -Math.round(r*Math.cos(teta));
+                        // Next point: end of first line, same direction, further
+                        var x1 = Math.round((r+25)*Math.sin(teta));
+                        var y1 = -Math.round((r+25)*Math.cos(teta));
+                        // Last point, horizontal line
+                        // Goes left or right depending on size of the chart
+                        if (teta_deg < 180){
+                            var x2 = x1+25;
+                        } else {
+                            var x2 = x1-25;
+                        }
+                        var y2 = y1;
+                        return ("M " + x0 + " " + y0 + " L "+ x1 + " " + y1 + " H " + x2);
+
                     })
-                    // .attr("transform", function(d) {
-                    //     var teta = ((d.startAngle + d.endAngle)/2);
-                    //     var teta_deg = Math.round((parseInt(teta)*180)/3.14156);
-                    //     return "rotate(" + teta_deg + ")";
-                    // })
+                    .attr("fill", "none")
                     .attr("stroke", "white")
-                    .attr("stroke-width", 2)
-                    .attr("x1", "0")
-                    .attr("y1", "0")
-                    .attr("x2", "0")
-                    .attr("y2", "-50");
-
-
-            // // Add a cool legend with lines pointing at arcs
-            // var line=piegroup.selectAll('line')
-            // .data(pie(vision_array))
-            // .enter()
-            //     .append("text")
-            //         .text("yo");
-
-
-            // // Add a cool legend with lines pointing at arcs
-            // path.append("line")
-            //         .attr("class", "axis-like")
-            //         .attr("x1", "0")
-            //         .attr("y1", "0")
-            //         .attr("x2", "0")
-            //         .attr("y2", "50");
-
-
-
-
-        //                     // Add axis-like lines
-        // chart.append("line")
-        //     .attr("class", "axis-like")
-        //     .attr("x1", "0")
-        //     .attr("y1", (titlesize - 5))
-        //     .attr("x2", "0")
-        //     .attr("y2", (titlesize + (barheight+2) * data.length));
-
+                    .attr("stroke-width", 1);
         };
         
         // Animate the donut
