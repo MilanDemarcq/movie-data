@@ -145,7 +145,7 @@ text.inside_info{
 	stroke-width: 2;
 }
 
-/*Pie Charts*/
+/*Pie and donut Charts*/
 
 .pie-text{
 	font-size: 14px;
@@ -155,6 +155,11 @@ text.inside_info{
 #VisionGraphs div{
 	margin: auto;
     width: 80%;
+}
+
+.donut_arc{
+/*	stroke: #404040;
+	stroke-width: 3px;*/
 }
 
 /*Display average rating using stars*/

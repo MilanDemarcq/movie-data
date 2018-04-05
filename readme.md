@@ -4,9 +4,22 @@ Gets information about seen movies then crunchs it to extract interesting things
 
 ## Language and libraries
 
-Work is done using *HTML*, *CSS* and *JavaScript*.  
+### Language
 
-For the JavaScript files, where all the work is done, *jQuery*, *Axios.js* and *D3.js* are used.  
+Used languages for this project are:
+
+* JavaScript
+* CSS
+* HTML
+
+### JavaScript libraries
+
+JS libs used:
+
+* jQuery
+* Axios.js
+* D3.js
+
 Library files are stored in */libs/*.
 
 ## Database

@@ -167,8 +167,6 @@ function getVisionData(apikey){
 
         // Create a donut chart
 
-        // first a pie chart
-
         var dataset = [
             { name: 'This', percent: 60 },
             { name: 'Thiiiiis', percent: 15 },
@@ -198,18 +196,23 @@ function getVisionData(apikey){
         console.log(vision_array);
 
         // Define chart's dimensions to be used later
-        var w=200,h=200;
+        var w=220,h=220;
         // Compute circle radius to fit chart size (with 2 px margin)
         var radius=(w-30)/2;
+        var inner_radius = radius/2;
 
         // Create pie chart
         var pie=d3.pie()
+        // Get values
         .value(function(d){return d.value})
-        .sort(null);
+        // No sorting
+        .sort(null)
+        // Pad angle to separate arcs
+        .padAngle(.04);
 
         // Create arc
         var arc=d3.arc()
-        .innerRadius(0)
+        .innerRadius(inner_radius)
         .outerRadius(radius);
 
         // Color scale : linear colors between to values
@@ -232,29 +235,61 @@ function getVisionData(apikey){
         .enter()
             .append('path')
             .attr("d", arc)
-            .attr("fill", function(d, i){return mycolor(i)});
+            // Color
+            .attr("fill", function(d, i){return mycolor(i)})
+            // Additionnal style is set in css
+            .attr("class", "donut_arc");
 
-        // Caption
-        var text=piegroup.selectAll('text')
-        .data(pie(vision_array))
-        .enter()
-            .append("text")
-                .attr("transform", function (d) {
-                    return "translate(" + arc.centroid(d) + ")";
-                })
-                .attr("text-anchor", "middle")
-                .attr("class", "pie-text")
-                .text(function(d){
-                    return d.data.name+" ("+d.data.value+"%)" ;
-                });
+        // Annotations will be executed after donut animation
+        var donut_annotations = function(){
 
-        // Add title
-        mysvg.append("text")
-            .text("Distribution")
-            .attr("class", "title")
-            .attr("y", 0)
-            .attr("dy", "1em")
-            .attr("x", w/2);
+            // Caption
+            var text=piegroup.selectAll('text')
+            .data(pie(vision_array))
+            .enter()
+                .append("text")
+                    // Animate the text: transition from center of donut
+                    .transition()
+                    .duration(200)
+                    // Put text to centroid of arc
+                    .attr("transform", function (d) {
+                        return "translate(" + arc.centroid(d) + ")";
+                    })
+                    // Middle of text is on arc centroid
+                    .attr("text-anchor", "middle")
+                    // Specific class
+                    .attr("class", "pie-text")
+                    // Print the desired text (name, value, etc)
+                    .text(function(d){
+                        //return d.data.name+" ("+d.data.value+"%)" ;
+                        // Only display value for significant groups (won't fit under 3%)
+                        if (d.data.value >= 3) {
+                            return d.data.value+"%";
+                        }                   
+                    });
+
+            // Add title
+            mysvg.append("text")
+                .text("Distribution")
+                .attr("class", "title")
+                .attr("y", 0)
+                .attr("dy", "1em")
+                .attr("x", w/2);
+
+        };
+        
+        // Animate the donut
+        path.transition()
+        .duration(1000)
+        .attrTween('d', function(d) {
+            var interpolate = d3.interpolate({startAngle: 0, endAngle: 0}, d);
+            return function(t) {
+                return arc(interpolate(t));
+            };
+        });
+
+        // Create annotations when animation is complete
+        setTimeout(donut_annotations,1000);
 
     // END WIP ZONE
 
