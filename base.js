@@ -541,7 +541,7 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
     var already_clicked = false;
 
     // On click actions on barcharts rectangles
-    $('.GraphSpace').unbind('click').on("click", "g", function(){
+    $('.barchart').unbind('click').on("click", "g", function(){
 
         if (already_clicked == false) {
 
@@ -574,12 +574,12 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
     });
 
     // Mouseover actions on barcharts rectangles
-    $('.GraphSpace').on("mouseover", "rect", function(){
+    $('.barchart').on("mouseover", "rect", function(){
         //$(this).css("fill", "grey");
     });
 
     // Mouseout actions
-    $('.GraphSpace').on("mouseout", "g", function(){   
+    $('.barchart').on("mouseout", "g", function(){   
         //
 
         // Cancel click actions on rectangles
