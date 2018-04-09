@@ -167,33 +167,33 @@ function getVisionData(apikey){
 
         // Create a donut chart
 
-        var dataset = [
-            { name: 'This', percent: 60 },
-            { name: 'Thiiiiis', percent: 15 },
-            { name: 'That', percent: 25 }
-        ];
-
-        console.log(dataset);
-
-        console.log(info_array);
-        console.log(visioncountarray);
-
+        // Get total number of visions to compute percents
         var totalvisions = 0;
         for (i = 0; i < info_array.length; i++){
             totalvisions += visioncountarray[i];
         }
 
-        console.log(totalvisions);
-
+        // Create an array of objects containing the name and value in percent for each type
         var vision_array = new Array(info_array.length);
         for (var i = 0; i < info_array.length; i++){
-            //vision_object[info_array[i]] = visioncountarray[i];
-            //vision_object[i].name = info_array[i];
-            //vision_object[i].value = visioncountarray[i];
             vision_array[i] = {"name": info_array[i], "value": Math.round((visioncountarray[i]/totalvisions)*100)};
         }
 
-        console.log(vision_array);
+        // For vizualisation purposes, it's not convenient to have small percent values side-by-side in the chart
+        for (i=1; i< vision_array.length; i++){
+            if (vision_array[i].value < 5 && vision_array[i-1].value < 5){
+                // Two consecutive small values found
+                for (j=1; j<vision_array.length-1; j++){
+                    if (vision_array[j-1].value > 4 && vision_array[j].value > 4 && vision_array[j+1].value > 4){
+                        // Three consecutive big values found
+                        // Switch the small value with the big
+                        var temp = vision_array[j];
+                        vision_array[j] = vision_array[i];
+                        vision_array[i] = temp;
+                    }
+                }
+            }
+        }
 
         // Define chart's dimensions to be used later
         var w=300,h=300;
@@ -277,17 +277,16 @@ function getVisionData(apikey){
                 .attr("dy", "1em")
                 .attr("x", w/2);
 
-
-
+            // Will be used later to store coordinates for tetx caption elements
+            var caption_coord = new Array (vision_array.length);
 
             // Add a cool legend with lines pointing at arcs
-
             var mypath=piegroup.selectAll('mypath')
             .data(pie(vision_array))
             .enter()
                 .append("path")
                     //.attr("d", "M 0 0 L 10 10")
-                    .attr("d", function(d){
+                    .attr("d", function(d,i){
                         // Get the angle (in rad) corresponding to the middle of each arc
                         var teta = ((d.startAngle + d.endAngle)/2);
                         var r = radius;
@@ -295,25 +294,49 @@ function getVisionData(apikey){
                         var teta_deg = Math.round((teta*180)/Math.PI);
                         // Polar to cartesian cordinates for origin
                         // Modified coordinates since d3 starts at 90° and goes clockwise
-                        var x0 = Math.round(r*Math.sin(teta));
-                        var y0 = -Math.round(r*Math.cos(teta));
+                        var x0 = Math.round((r+3)*Math.sin(teta));
+                        var y0 = -Math.round((r+3)*Math.cos(teta));
                         // Next point: end of first line, same direction, further
                         var x1 = Math.round((r+25)*Math.sin(teta));
                         var y1 = -Math.round((r+25)*Math.cos(teta));
                         // Last point, horizontal line
-                        // Goes left or right depending on size of the chart
+                        // Goes left or right depending on where in chart is the arc placed
                         if (teta_deg < 180){
                             var x2 = x1+25;
+                            var anchor = "start";
+                            var xtext = x2 + 3;
                         } else {
                             var x2 = x1-25;
+                            var anchor = "end";
+                            var xtext = x2 - 3;
                         }
                         var y2 = y1;
+                        var ytext = y2;
+
+                        // Update caption coordinates and anchor type
+                        caption_coord[i] = {"name": d.data.name, "x": xtext, "y": ytext, "anchor": anchor};
+
+                        // Write path
                         return ("M " + x0 + " " + y0 + " L "+ x1 + " " + y1 + " H " + x2);
 
                     })
                     .attr("fill", "none")
                     .attr("stroke", "white")
                     .attr("stroke-width", 1);
+
+            // Add text after l=the path using the coordinates stored when creating path
+            var mypath=piegroup.selectAll('mypath')
+            .data(pie(vision_array))
+            .enter()
+                .append("text")
+                .attr("class", "pie-caption")
+                .attr("x", function(d,i){return caption_coord[i].x})
+                .attr("y", function(d,i){return caption_coord[i].y})
+                .attr("dy", ".3em")
+                .attr("text-anchor", function(d,i){return caption_coord[i].anchor})
+                .text(function(d,i){return caption_coord[i].name});
+
+
         };
         
         // Animate the donut

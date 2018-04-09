@@ -152,6 +152,14 @@ text.inside_info{
 	fill: #F0F0F0;
 }
 
+.pie-caption{
+	font-size: 13px;
+	fill: #F0F0F0;
+	font-family: 'Times New Roman';
+	font-weight: lighter;
+}
+
+
 #VisionGraphs div{
 	margin: auto;
     width: 80%;
