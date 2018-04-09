@@ -123,8 +123,6 @@ text.title{
 	fill: #F0F0F0;
 	font-family: 'Times New Roman', serif;
     font-size: 16px;
-/*    text-anchor: middle;
-    dominant-baseline: central;*/
     pointer-events: none;
 }
 
@@ -150,6 +148,7 @@ text.inside_info{
 .pie-text{
 	font-size: 14px;
 	fill: #F0F0F0;
+	pointer-events: none;
 }
 
 .pie-caption{
@@ -168,6 +167,10 @@ text.inside_info{
 .donut_arc{
 /*	stroke: #404040;
 	stroke-width: 3px;*/
+}
+
+.donut_arc:hover{
+	fill: #DE8D47;
 }
 
 /*Display average rating using stars*/

@@ -243,6 +243,11 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid){
         .innerRadius(inner_radius)
         .outerRadius(radius);
 
+        // Other bigger arc used on click
+        var arc2=d3.arc()
+        .innerRadius(inner_radius + 5)
+        .outerRadius(radius + 10);
+
         // Color scale : linear colors between to values
         var mycolor = d3.scaleLinear()
         .range(['#e75244','#2A6180']);
@@ -266,7 +271,18 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid){
             // Color
             .attr("fill", function(d, i){return mycolor(i)})
             // Additionnal style is set in css
-            .attr("class", "donut_arc");
+            .attr("class", "donut_arc")
+            // Click and mouseleave events
+            .on("click", function(d) {
+                d3.select(this)
+                    .transition()
+                    .duration(500)
+                    .attr("d", arc2)             
+            })
+            .on("mouseleave", function(d) {
+                d3.select(this).transition()            
+                    .attr("d", arc)
+           });
 
         // Annotations will be executed after donut animation
         var donut_annotations = function(){
