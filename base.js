@@ -196,10 +196,11 @@ function getVisionData(apikey){
         }
 
         // Define chart's dimensions to be used later
-        var w=300,h=300;
-        var chart_inner_margin = 100;
+        var h= 300;
+        var w = $('#visonpiechart').parent().width();
+        var chart_inner_margin = 120;
         // Compute circle radius to fit chart size (with 2 px margin)
-        var radius=(w-chart_inner_margin)/2;
+        var radius=(h - chart_inner_margin)/2;
         var inner_radius = radius/2;
 
         // Create pie chart
@@ -222,7 +223,7 @@ function getVisionData(apikey){
 
         // Create SVG diagram
         var mysvg=d3.select("#visonpiechart")
-        .attr("width", w)
+        .attr("width", "100%")
         .attr("height", h);
 
         // The main group
@@ -356,6 +357,10 @@ function getVisionData(apikey){
 
 
     });
+    
+}
+
+function createDonutChart(radius, inner_radius, data, domid){
     
 }
 
