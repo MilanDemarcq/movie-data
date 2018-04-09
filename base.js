@@ -163,8 +163,6 @@ function getVisionData(apikey){
         createBarChart(420, 20, visioncountarray, "#visionsbarchart", info_array, "inside", "Vision Techniques Distribution");
 
 
-        // WIP ZONE
-
         // Create a donut chart
 
         // Get total number of visions to compute percents
@@ -180,25 +178,53 @@ function getVisionData(apikey){
         }
 
         // For vizualisation purposes, it's not convenient to have small percent values side-by-side in the chart
-        for (i=1; i< vision_array.length; i++){
-            if (vision_array[i].value < 5 && vision_array[i-1].value < 5){
-                // Two consecutive small values found
-                for (j=1; j<vision_array.length-1; j++){
-                    if (vision_array[j-1].value > 4 && vision_array[j].value > 4 && vision_array[j+1].value > 4){
-                        // Three consecutive big values found
-                        // Switch the small value with the big
-                        var temp = vision_array[j];
-                        vision_array[j] = vision_array[i];
-                        vision_array[i] = temp;
-                    }
-                }
-            }
-        }
+        vision_array = alternateJSObject(vision_array, "value", 5);
 
-        // Define chart's dimensions to be used later
+        // Define chart's dimensions
         var h= 300;
         var w = $('#visonpiechart').parent().width();
         var chart_inner_margin = 120;
+
+        // Call dedicated function
+        createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart");
+
+
+    }); // End of API GET callback
+    
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// When given a JS Object in form of array, tries to alternate small elements with bigger ones
+// The attribute of object to be taken into consideration is passed as "value_holder" parameter
+function alternateJSObject (jsobject, value_holder, threshold){
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+    for (i=1; i< jsobject.length; i++){
+        if (jsobject[i][value_holder] < threshold && jsobject[i-1][value_holder] < threshold){
+            // Two consecutive small values found
+            for (j=1; j<jsobject.length-1; j++){
+                if (jsobject[j-1][value_holder]>= threshold && jsobject[j][value_holder] >= threshold && jsobject[j+1][value_holder] >= threshold){
+                    // Three consecutive big values found
+                    // Switch the small value with the big
+                    var temp = jsobject[j];
+                    jsobject[j] = jsobject[i];
+                    jsobject[i] = temp;
+                }
+            }
+        }
+    }
+
+    return jsobject;
+
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Create a Donut Chart
+function createDonutChart(h, w, chart_inner_margin, data_object, domid){
+/////////////////////////////////////////////////////////////////////////////
+
         // Compute circle radius to fit chart size (with 2 px margin)
         var radius=(h - chart_inner_margin)/2;
         var inner_radius = radius/2;
@@ -222,7 +248,7 @@ function getVisionData(apikey){
         .range(['#e75244','#2A6180']);
 
         // Create SVG diagram
-        var mysvg=d3.select("#visonpiechart")
+        var mysvg=d3.select(domid)
         .attr("width", "100%")
         .attr("height", h);
 
@@ -233,7 +259,7 @@ function getVisionData(apikey){
 
         // The pie elements
         var path=piegroup.selectAll('path')
-        .data(pie(vision_array))
+        .data(pie(data_object))
         .enter()
             .append('path')
             .attr("d", arc)
@@ -247,7 +273,7 @@ function getVisionData(apikey){
 
             // Caption
             var text=piegroup.selectAll('text')
-            .data(pie(vision_array))
+            .data(pie(data_object))
             .enter()
                 .append("text")
                     // Animate the text: transition from center of donut
@@ -279,11 +305,11 @@ function getVisionData(apikey){
                 .attr("x", w/2);
 
             // Will be used later to store coordinates for tetx caption elements
-            var caption_coord = new Array (vision_array.length);
+            var caption_coord = new Array (data_object.length);
 
             // Add a cool legend with lines pointing at arcs
             var mypath=piegroup.selectAll('mypath')
-            .data(pie(vision_array))
+            .data(pie(data_object))
             .enter()
                 .append("path")
                     //.attr("d", "M 0 0 L 10 10")
@@ -327,7 +353,7 @@ function getVisionData(apikey){
 
             // Add text after l=the path using the coordinates stored when creating path
             var mypath=piegroup.selectAll('mypath')
-            .data(pie(vision_array))
+            .data(pie(data_object))
             .enter()
                 .append("text")
                 .attr("class", "pie-caption")
@@ -352,17 +378,8 @@ function getVisionData(apikey){
 
         // Create annotations when animation is complete
         setTimeout(donut_annotations,1000);
-
-    // END WIP ZONE
-
-
-    });
-    
 }
 
-function createDonutChart(radius, inner_radius, data, domid){
-    
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Add a simple SVG Bar Chart using D3.js
