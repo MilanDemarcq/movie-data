@@ -62,7 +62,7 @@ $(function() {
 function getRatingData(apikey){
 ///////////////////////////////////
 
-var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     // Get full base
     // Could be improved by getting only the Note fields (field API parameter)
@@ -186,8 +186,70 @@ function getVisionData(apikey){
         var chart_inner_margin = 120;
 
         // Call dedicated function
-        createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart");
+        createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart", function(){
 
+            // When donut chart is created
+            // Add circle in middle of donut (will be used to trigger modification of the viewed data)
+            var okcircle = d3.select("#visonpiechart").selectAll("g");
+            okcircle.append("circle").attr("cx", 0).attr("cy", 0).attr("r", "15").attr("class", "pie-inner-circle");
+            okcircle.append("text").text("OK?").attr("dy",".3em").attr("class", "pie-inner-circle");
+
+            // Track clicks
+            var already_clicked = false;
+
+            // When circle is clicked
+            $('.pie-inner-circle').on("click", function(){
+
+                // If first time clicked ie displaying the full dataset
+                if (already_clicked == false){
+
+                    // Create a new set of data to represent the "OK" and "Not OK" datasets
+                    var ok_array = new Array(2);
+                    ok_array[0] = {"name": "OK", "value": 0};
+                    ok_array[1] = {"name": "Not OK", "value": 0};
+
+                    for (i=0; i<vision_array.length; i++){
+                        if (vision_array[i].name == "Netflix" || vision_array[i].name == "Cinema" || vision_array[i].name == "Television" || vision_array[i].name == "Other"){
+                            ok_array[0].value += vision_array[i].value;
+                        } else {
+                            ok_array[1].value += vision_array[i].value;
+                        }
+                    }
+
+                    // Remove the donut chart, keep only the title (ugly if removed then recreated) and inner circle
+                    $('#visonpiechart').find('path, text:not(.title, .pie-inner-circle)').remove();
+
+                    // Create another donut chart with same specs expect the dataset
+                    createDonutChart(h, w, chart_inner_margin, ok_array, "#visonpiechart", function(){
+                        // Remove one of the two title that are on top of each other
+                        $('#visonpiechart').find('.title:first-of-type').remove();
+                    });
+
+                    // Note click
+                    already_clicked = true;
+
+                } else {
+
+                    // Remove the donut chart, keep only the title (ugly if removed then recreated) and inner circle
+                    $('#visonpiechart').find('path, text:not(.title, .pie-inner-circle)').remove();
+                    // Recreate the original donut chart with full dataset
+                    createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart", function(){
+                        // Remove one of the two title that are on top of each other
+                        $('#visonpiechart').find('.title:first-of-type').remove();
+                    });
+                    
+                    // Note click
+                    already_clicked = false;
+
+                }
+
+
+            }); // Inner circle click action end
+
+
+        }); // First creation of donut chart callback
+
+ 
 
     }); // End of API GET callback
     
@@ -222,7 +284,7 @@ function alternateJSObject (jsobject, value_holder, threshold){
 
 /////////////////////////////////////////////////////////////////////////////
 // Create a Donut Chart
-function createDonutChart(h, w, chart_inner_margin, data_object, domid){
+function createDonutChart(h, w, chart_inner_margin, data_object, domid, callback){
 /////////////////////////////////////////////////////////////////////////////
 
         // Compute circle radius to fit chart size (with 2 px margin)
@@ -250,8 +312,8 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid){
 
         // Color scale : linear colors between to values
         var mycolor = d3.scaleLinear()
-        .domain([0, data_object.length])
-        .range(['#2A6180','#D75C37']);
+        .domain([1, data_object.length])
+        .range(['#2A6180','#FF7200']);
         //.range(['#e75244','#2A6180']);
 
         // Create SVG diagram
@@ -382,7 +444,11 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid){
                 .text(function(d,i){return caption_coord[i].name});
 
 
-        };
+            // If needed, send callback
+            if(callback) callback();
+
+
+        }; // End of donut_animation function
         
         // Animate the donut
         path.transition()
