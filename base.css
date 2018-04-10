@@ -112,6 +112,7 @@ text.title{
 
 .barchart rect {
 	fill: #2A6180;
+	fill: #0070BC;
 	shape-rendering: crispEdges;
 }
 
@@ -122,7 +123,7 @@ text.title{
 .barchart text:not(.title){
 	fill: #F0F0F0;
 	font-family: 'Times New Roman', serif;
-    font-size: 16px;
+    font-size: 14px;
     pointer-events: none;
 }
 
@@ -194,7 +195,7 @@ text.inside_info{
 }
 
 .stars-in {
-	color: #2A6180;
+	color: #0070BC;
 	position: absolute;
 	z-index: 1;
 	display: block;

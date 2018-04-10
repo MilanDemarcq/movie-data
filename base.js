@@ -250,7 +250,9 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid){
 
         // Color scale : linear colors between to values
         var mycolor = d3.scaleLinear()
-        .range(['#e75244','#2A6180']);
+        .domain([0, data_object.length])
+        .range(['#2A6180','#D75C37']);
+        //.range(['#e75244','#2A6180']);
 
         // Create SVG diagram
         var mysvg=d3.select(domid)
@@ -306,8 +308,8 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid){
                     // Print the desired text (name, value, etc)
                     .text(function(d){
                         //return d.data.name+" ("+d.data.value+"%)" ;
-                        // Only display value for significant groups (won't fit under 3%)
-                        if (d.data.value >= 3) {
+                        // Only display value for significant groups (won't fit under 4%)
+                        if (d.data.value >= 4) {
                             return d.data.value+"%";
                         }                   
                     });
