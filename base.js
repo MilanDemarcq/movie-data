@@ -39,11 +39,14 @@ $(function() {
             $('#TotalCount').append(full_base_length);
         });
 
-        // VISION Stats
+        // Vision Stats
         getVisionData(apikey);
 
         // Rating Stats
         getRatingData(apikey);
+
+        // Date Stats
+        getDateData(apikey);
 
     });
 
@@ -56,6 +59,64 @@ $(function() {
 
 
 //// FUNCTIONS
+
+function getDateData(apikey){
+
+    // Get full base
+    airtableApiGet(apikey, "", "", function(response_data){
+
+        console.log(response_data);
+
+        // First, put the received Object in a more convenient format (classic JS Object)
+
+
+        var records_nb = response_data.data.records.length;
+
+
+        // List of fields that are possible
+        // (Because if a field is empty in Airtable, it will not be present in received data for this record)
+        var fieldlist = ["Name", "Year", "Director", "Note", "Language", "Vision", "VY", "VN"];
+
+        // Create object in form of an array of correct length
+        var full_array = new Array (records_nb);
+        // Fill it with a skeleton of expected content
+        for (k=0; k<records_nb; k++){
+            full_array[k] = {Name: "Name", Year: "Year", Director: "Director", Note: "Note", Language: "Language", Vision: "Vision", VY: "VY", VN: "VN"};
+        }
+
+        for (i=0; i<records_nb; i++){
+
+            for (j=0; j<fieldlist.length; j++){
+
+                full_array[i][fieldlist[j]] = response_data.data.records[i].fields[fieldlist[j]];
+
+            }
+
+        }
+
+        console.log(full_array);
+
+        // Calculate average year and average date
+        var avg_year = 0;
+        var avg_age = 0;
+        for (i=0; i<records_nb; i++){
+            if (full_array[i].Year != undefined){
+                avg_year += full_array[i].Year;
+                avg_age += full_array[i].VY - full_array[i].Year;
+            } 
+        }
+        avg_year = avg_year/records_nb;
+        avg_age = avg_age/records_nb;
+
+        console.log(avg_year);
+        console.log(avg_age);
+
+        // Append value on page
+        $('#average_year').append(Math.round(avg_year*100)/100);
+        $('#average_age').append(Math.round(avg_age*100)/100).append(" years");
+
+    });
+}
 
 ///////////////////////////////////
 // Get rating data
@@ -149,11 +210,6 @@ function getVisionData(apikey){
 
         });
 
-        // $('#VisionStats div').each(function(index){
-        //     $(this).append(visioncountarray[index]);
-        // });
-
-
         // Create a bar chart
 
         // Titles
@@ -186,7 +242,7 @@ function getVisionData(apikey){
         var chart_inner_margin = 120;
 
         // Call dedicated function
-        createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart", function(){
+        createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart", "#2A6180", "#FF7200", function(){
 
             // When donut chart is created
             // Add circle in middle of donut (will be used to trigger modification of the viewed data)
@@ -220,7 +276,7 @@ function getVisionData(apikey){
                     $('#visonpiechart').find('path, text:not(.title, .pie-inner-circle)').remove();
 
                     // Create another donut chart with same specs expect the dataset
-                    createDonutChart(h, w, chart_inner_margin, ok_array, "#visonpiechart", function(){
+                    createDonutChart(h, w, chart_inner_margin, ok_array, "#visonpiechart", "#006F3C", "#BF212F", function(){
                         // Remove one of the two title that are on top of each other
                         $('#visonpiechart').find('.title:first-of-type').remove();
                     });
@@ -233,7 +289,7 @@ function getVisionData(apikey){
                     // Remove the donut chart, keep only the title (ugly if removed then recreated) and inner circle
                     $('#visonpiechart').find('path, text:not(.title, .pie-inner-circle)').remove();
                     // Recreate the original donut chart with full dataset
-                    createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart", function(){
+                    createDonutChart(h, w, chart_inner_margin, vision_array, "#visonpiechart", "#2A6180", "#FF7200", function(){
                         // Remove one of the two title that are on top of each other
                         $('#visonpiechart').find('.title:first-of-type').remove();
                     });
@@ -284,7 +340,7 @@ function alternateJSObject (jsobject, value_holder, threshold){
 
 /////////////////////////////////////////////////////////////////////////////
 // Create a Donut Chart
-function createDonutChart(h, w, chart_inner_margin, data_object, domid, callback){
+function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcolor, endcolor, callback){
 /////////////////////////////////////////////////////////////////////////////
 
         // Compute circle radius to fit chart size (with 2 px margin)
@@ -312,8 +368,9 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, callback
 
         // Color scale : linear colors between to values
         var mycolor = d3.scaleLinear()
-        .domain([1, data_object.length])
-        .range(['#2A6180','#FF7200']);
+        .domain([0, data_object.length-1])
+        .range([startcolor,endcolor]);
+        //.range(['#2A6180','#FF7200']);
         //.range(['#e75244','#2A6180']);
 
         // Create SVG diagram
@@ -720,6 +777,7 @@ function airtableApiGet(apikey, myfields, formula, callback){
         params: {
             //fields: myfields,
             // Filter using the formula in parameter
+            view: "Grid view",
             filterByFormula: formula,
         }
     }
