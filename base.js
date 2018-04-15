@@ -60,7 +60,10 @@ $(function() {
 
 //// FUNCTIONS
 
+///////////////////////////////////////////
+// Get data about movie's release date
 function getDateData(apikey){
+///////////////////////////////////////////
 
     // Get full base
     airtableApiGet(apikey, "", "", function(response_data){
@@ -69,9 +72,8 @@ function getDateData(apikey){
 
         // First, put the received Object in a more convenient format (classic JS Object)
 
-
+        // Get number of records for convenience
         var records_nb = response_data.data.records.length;
-
 
         // List of fields that are possible
         // (Because if a field is empty in Airtable, it will not be present in received data for this record)
@@ -84,17 +86,15 @@ function getDateData(apikey){
             full_array[k] = {Name: "Name", Year: "Year", Director: "Director", Note: "Note", Language: "Language", Vision: "Vision", VY: "VY", VN: "VN"};
         }
 
+        // Copy everything into new container
         for (i=0; i<records_nb; i++){
-
             for (j=0; j<fieldlist.length; j++){
-
                 full_array[i][fieldlist[j]] = response_data.data.records[i].fields[fieldlist[j]];
 
             }
-
         }
 
-        console.log(full_array);
+        // OK, new container is done
 
         // Calculate average year and average date
         var avg_year = 0;
@@ -108,12 +108,36 @@ function getDateData(apikey){
         avg_year = avg_year/records_nb;
         avg_age = avg_age/records_nb;
 
-        console.log(avg_year);
-        console.log(avg_age);
-
-        // Append value on page
+        // Append values on page
         $('#average_year').append(Math.round(avg_year*100)/100);
         $('#average_age').append(Math.round(avg_age*100)/100).append(" years");
+
+        // Sort movies into categories according to time difference between release and viewing
+        var categories = ["Release Year", "1 year after", "Less than 3 years after", "Less than 5 years after", "Less than 10 years after", "More than 10 years after"];
+        var date_cat = [categories.length];
+
+        // Fill it with a skeleton of expected content
+        for (k=0; k<categories.length; k++){
+            date_cat[k] = {Name: categories[k], Value: 0};
+        }
+
+        for (i=0; i<records_nb; i++){
+            var age = full_array[i].VY - full_array[i].Year;
+            if (age==0){date_cat[0].Value++;}
+            else if (age==1){date_cat[1].Value++;}
+            else if (age<3){date_cat[2].Value++;}
+            else if (age<5){date_cat[3].Value++;}
+            else if (age<10){date_cat[4].Value++;}
+            else if (age>=10){date_cat[5].Value++;}
+        }
+
+        console.log(date_cat);
+
+        createBarChart(500, 20, date_cat, "#age_barchart", categories, "after", "Age Categories");
+
+        
+
+
 
     });
 }
@@ -160,7 +184,7 @@ function getRatingData(apikey){
         mean_rating = rsum/count;
 
         // Print results: average
-        $('#RatingStats div:first').append(mean_rating).append(" / 10");
+        $('#RatingStats div:first').append(Math.round(mean_rating*10)/10).append(" / 10");
 
         // Print results on stars
         var star_percent = Math.round(mean_rating*10);
