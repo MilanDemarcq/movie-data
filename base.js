@@ -45,6 +45,70 @@ $(function() {
         // Rating Stats
         getRatingData(apikey);
 
+        // WIP Zone
+
+        // var chit = Array(8);
+
+        // chit.init = function(){
+        //     var temp = this;
+        //     for (i=0; i<this.length; i++){
+        //         temp[i] = new dataObject();
+        //     }
+        //     return temp;
+        // }
+
+        // chit.init();
+
+        // chit[3].Value = 5;
+
+        // chit.getValues = function(){
+        //     return this.map(function(o){return o.Value});
+        // }
+
+        // console.log(chit.getValues());
+
+        // // var chout = {
+        // //     wat : "tt"
+        // // };
+
+        // // console.log(chout);
+
+        // var chat = Object.create(chit);
+
+        // //chat.init();
+
+        // chat.length = 12;
+
+        // chat.init();
+
+        // chat[1].Value = 12;
+
+        // //chat[0].Name = "AZ";
+
+        // //chat.wat = "aa";
+
+        // console.log(chat.getValues());
+        // console.log(chat);
+
+
+        // console.log("-----------------------------")
+
+        // var hop = createDataStructure(3);
+        // console.log(hop);
+        // hop[1].Name = "gg";
+        // hop[2].Value = 88;
+        // console.log(hop);
+        // console.log(hop.getValues());
+
+        // // var otherthing = Object.create(mything);
+        // // console.log(otherthing);
+
+
+        // console.log("///////////////////////////")
+
+
+        // End WIP Zone
+
         // Date Stats
         getDateData(apikey);
 
@@ -59,6 +123,52 @@ $(function() {
 
 
 //// FUNCTIONS
+
+// WIP Zone
+
+// keep
+function createDataStructure(size){
+
+    var datastruct = Array(size);
+
+    datastruct.init = function(){
+        for (i=0; i<this.length; i++){
+            this[i] = new dataObject();
+        }
+        return this;
+    }
+
+    datastruct.init();
+
+    // chit[3].Value = 5;
+
+    datastruct.getValues = function(){
+        return this.map(function(o){return o.Value});
+    }
+
+    datastruct.getNames = function(){
+        return this.map(function(o){return o.Name});
+    }
+
+    datastruct.giveNames = function(names_array){
+        for (i=0; i<this.length; i++){
+            this[i].Name = names_array[i];
+        }
+        return this;
+    }
+
+    return datastruct;
+
+}
+
+//Keep
+function dataObject(){
+    this.Name = "nullName";
+    this.Value = 0;
+}
+
+
+// END Wip zone
 
 ///////////////////////////////////////////
 // Get data about movie's release date
@@ -114,13 +224,14 @@ function getDateData(apikey){
 
         // Sort movies into categories according to time difference between release and viewing
         var categories = ["Release Year", "1 year after", "Less than 3 years after", "Less than 5 years after", "Less than 10 years after", "More than 10 years after"];
-        var date_cat = [categories.length];
 
-        // Fill it with a skeleton of expected content
-        for (k=0; k<categories.length; k++){
-            date_cat[k] = {Name: categories[k], Value: 0};
-        }
+        //Create an array of defined type
+        var date_cat = createDataStructure(categories.length);
 
+        // Put the categories names
+        date_cat.giveNames(categories);
+
+        // Get the data values
         for (i=0; i<records_nb; i++){
             var age = full_array[i].VY - full_array[i].Year;
             if (age==0){date_cat[0].Value++;}
@@ -133,7 +244,7 @@ function getDateData(apikey){
 
         console.log(date_cat);
 
-        createBarChart(500, 20, date_cat, "#age_barchart", categories, "after", "Age Categories");
+        createBarChart(500, 20, date_cat, "#age_barchart", "inside", "Age Categories");
 
         
 
@@ -147,8 +258,6 @@ function getDateData(apikey){
 function getRatingData(apikey){
 ///////////////////////////////////
 
-    var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
     // Get full base
     // Could be improved by getting only the Note fields (field API parameter)
     airtableApiGet(apikey, "", "", function(response_data){
@@ -156,10 +265,14 @@ function getRatingData(apikey){
         // Init vars and get total number of records to loop
         var count = 0;
         var rsum = 0;
-        var total_length =  response_data.data.records.length;
+        var total_length =  response_data.data.records.length;  
+
+        //The categories (stars)
+        var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];   
 
         // Array to compute count of each rating
-        //var ratingcountarray = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var ratingcountarray = createDataStructure(info_array.length); 
+        ratingcountarray.giveNames(info_array);  
 
         // Sum up the ratings
         for (i=0; i<total_length; i++){
@@ -171,7 +284,7 @@ function getRatingData(apikey){
             if (record.Note != undefined){
 
                 // Update array of rating counts
-                ratingcountarray[record.Note-1]++;
+                ratingcountarray[record.Note-1].Value++;
                 // Update sum for average
                 rsum+=record.Note;
                 count++;
@@ -195,11 +308,7 @@ function getRatingData(apikey){
         }, 2000);
 
         // Simple bar chart with D3.js
-
-        //Additionnal info in array to display after bars
-        var info_array = ["★", "★★", "★★★", "★★★★", "★★★★★", "★★★★★★", "★★★★★★★", "★★★★★★★★", "★★★★★★★★★", "★★★★★★★★★★"];
-
-        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", info_array, "after", "Rating Distribution");
+        createBarChart(500, 20, ratingcountarray, "#ratingbarchart", "after", "Rating Distribution");
 
     });
 
@@ -215,7 +324,7 @@ function getVisionData(apikey){
     var visiontypesarray = ["NX", "CN", "ST", "DL", "TV", "AU"];
 
     // Array containing counts of vision types
-    var visioncountarray = [0, 0, 0, 0, 0, 0];
+    var visioncountarray = createDataStructure(visiontypesarray.length);
 
     // Get table and treat it
     airtableApiGet(apikey, "", "", function(response_data){
@@ -227,7 +336,7 @@ function getVisionData(apikey){
            $.map(visiontypesarray, function(value, j){
 
                 if (value == records_array[i].fields.Vision){
-                    visioncountarray[j]++;
+                    visioncountarray[j].Value++;
                 }
 
            });
@@ -239,8 +348,10 @@ function getVisionData(apikey){
         // Titles
         var info_array = ["Netflix", "Cinema", "Streaming", "Download", "Television", "Other"];
 
+        visioncountarray.giveNames(info_array);
+
         // Simple bar chart (function uses D3)
-        createBarChart(420, 20, visioncountarray, "#visionsbarchart", info_array, "inside", "Vision Techniques Distribution");
+        createBarChart(420, 20, visioncountarray, "#visionsbarchart", "inside", "Vision Techniques Distribution");
 
 
         // Create a donut chart
@@ -248,17 +359,19 @@ function getVisionData(apikey){
         // Get total number of visions to compute percents
         var totalvisions = 0;
         for (i = 0; i < info_array.length; i++){
-            totalvisions += visioncountarray[i];
+            totalvisions += visioncountarray[i].Value;
         }
 
         // Create an array of objects containing the name and value in percent for each type
         var vision_array = new Array(info_array.length);
         for (var i = 0; i < info_array.length; i++){
-            vision_array[i] = {"name": info_array[i], "value": Math.round((visioncountarray[i]/totalvisions)*100)};
+            vision_array[i] = {"Name": info_array[i], "Value": Math.round(((visioncountarray[i].Value)/totalvisions)*100)};
         }
 
         // For vizualisation purposes, it's not convenient to have small percent values side-by-side in the chart
-        vision_array = alternateJSObject(vision_array, "value", 5);
+        vision_array = alternateJSObject(vision_array, "Value", 5);
+
+        console.log(vision_array);
 
         // Define chart's dimensions
         var h= 300;
@@ -285,14 +398,14 @@ function getVisionData(apikey){
 
                     // Create a new set of data to represent the "OK" and "Not OK" datasets
                     var ok_array = new Array(2);
-                    ok_array[0] = {"name": "OK", "value": 0};
-                    ok_array[1] = {"name": "Not OK", "value": 0};
+                    ok_array[0] = {"Name": "OK", "Value": 0};
+                    ok_array[1] = {"Name": "Not OK", "Value": 0};
 
                     for (i=0; i<vision_array.length; i++){
-                        if (vision_array[i].name == "Netflix" || vision_array[i].name == "Cinema" || vision_array[i].name == "Television" || vision_array[i].name == "Other"){
-                            ok_array[0].value += vision_array[i].value;
+                        if (vision_array[i].Name == "Netflix" || vision_array[i].Name == "Cinema" || vision_array[i].Name == "Television" || vision_array[i].Name == "Other"){
+                            ok_array[0].Value += vision_array[i].Value;
                         } else {
-                            ok_array[1].value += vision_array[i].value;
+                            ok_array[1].Value += vision_array[i].Value;
                         }
                     }
 
@@ -374,7 +487,7 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
         // Create pie chart
         var pie=d3.pie()
         // Get values
-        .value(function(d){return d.value})
+        .value(function(d){return d.Value})
         // No sorting
         .sort(null)
         // Pad angle to separate arcs
@@ -452,8 +565,8 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
                     .text(function(d){
                         //return d.data.name+" ("+d.data.value+"%)" ;
                         // Only display value for significant groups (won't fit under 4%)
-                        if (d.data.value >= 4) {
-                            return d.data.value+"%";
+                        if (d.data.Value >= 4) {
+                            return d.data.Value+"%";
                         }                   
                     });
 
@@ -502,7 +615,7 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
                         var ytext = y2;
 
                         // Update caption coordinates and anchor type
-                        caption_coord[i] = {"name": d.data.name, "x": xtext, "y": ytext, "anchor": anchor};
+                        caption_coord[i] = {"name": d.data.Name, "x": xtext, "y": ytext, "anchor": anchor};
 
                         // Write path
                         return ("M " + x0 + " " + y0 + " L "+ x1 + " " + y1 + " H " + x2);
@@ -549,28 +662,44 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
 ////////////////////////////////////////////////////////////////////////////////
 // Add a simple SVG Bar Chart using D3.js
 // Chart width, bar height is passed along with the data and DOM element ID.
-function createBarChart(width, barheight, data, domid, info_array, info_loc, chart_title){
+function createBarChart(width, barheight, data, domid, info_loc, chart_title){
 ////////////////////////////////////////////////////////////////////////////////
 
     // Simple bar chart with D3.js
+
+    // Data in parameter must be a JS Object of the following format: 
+    // [i] Name: myName(string), Value: myValue(int)
+    // Use createDataStructure() 
 
     // Title: assume vertical size of non-null title
     var titlesize = 25;
 
     // Get size of longest string in info_array
     var info_max_length = 0;
-    for (i=0; i<info_array.length; i++){
-        if (info_array[i].length>info_max_length){info_max_length = info_array[i].length;}
+    for (i=0; i<data.length; i++){
+        if (data.getNames()[i].length>info_max_length){info_max_length = data.getNames()[i].length;}
     }
 
     // Create x scale
     if (info_loc == "after") {
         // The max is the total width of the graph minus some size necessary to display info_array elements after the bars
-        var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width - info_max_length*10 - 5]);
+        var x = d3.scaleLinear().domain([0, d3.max(data.getValues())]).range([0, width - info_max_length*10 - 5]);
+
+        //console.log("max test " + d3.max(data.map(function(o){return o.Value})));
+
+        // OK stop
+
+        // I need to : define my object Name/Value as a class (how in JS?)
+        // Maybe even the array of this object as a class if possible.
+
+        // Then, define a set of methods with this class such as the one that is
+        // data -> data.map(function(o){return o.Value}) to get the Value's of objects of array (like a specific map)
+        // Same for Name's.
+        // And maybe other methods that apply to class and can be useful. 
     }
     else {
         // The max is the total width of the graph
-        var x = d3.scaleLinear().domain([0, d3.max(data)]).range([0, width]);
+        var x = d3.scaleLinear().domain([0, d3.max(data.getValues())]).range([0, width]);
     }
 
     // Create chart and specify its size
@@ -584,7 +713,7 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
     chart.attr("mybarheight", barheight).attr("mydatalength", data.length).attr("mytitlesize", titlesize);
 
     // Create the chart's bars
-    var bar = chart.selectAll("g").data(data).enter()
+    var bar = chart.selectAll("g").data(data.getValues()).enter()
         .append("g")
             .attr("transform", function(d, i) { return "translate(0," + (i * (barheight+2) + titlesize) + ")"; });
 
@@ -598,7 +727,7 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
         .duration(1000)
         .attr("width", x)
         .on("end", function(d,i){
-            if (i==info_array.length - 1) {
+            if (i==data.length - 1) {
                 //alert("done");
                 annotateGraph();
             }
@@ -632,7 +761,7 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
         if (info_loc == "after"){
             bar.append("text")
             .attr("class", "caption")
-            .text(function(d,i){return info_array[i]})
+            .text(function(d,i){return data.getNames()[i]})
             .attr("y", barheight / 2)
             .attr("dy", ".3em")
             .attr("x", function(d, i){return x(d)})
@@ -649,7 +778,7 @@ function createBarChart(width, barheight, data, domid, info_array, info_loc, cha
                 .attr("dy", ".3em")
                 .attr("x", "10")
                 .attr("text-anchor", "start")
-                .text(function(d,i){return info_array[i]})
+                .text(function(d,i){return data.getNames()[i]})
                 // Get actual size of text and store it as an attribute
                 .attr("mylength", function(d,i){return this.getComputedTextLength();});
 
