@@ -191,6 +191,29 @@ text.pie-inner-circle{
 	pointer-events: none;
 }
 
+/*Line Charts*/
+
+.linechart-line{
+	stroke: #0070BC;
+	stroke-width: 4;
+	/*stroke-dasharray: */1;
+
+}
+
+.linechart path:not(.linechart-line) {
+	stroke: #FFFFFF;
+	stroke-width: 1;
+}
+
+.linechart line{
+	stroke: #FFFFFF;
+}
+
+.linechart text:not(.title){
+	fill: #FFFFFF;
+	font-size: 11px;
+}
+
 /*Display average rating using stars*/
 
 #RatingStats

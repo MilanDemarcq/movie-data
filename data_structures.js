@@ -5,6 +5,7 @@
 // List of functions:
 // - createDataStructure(size)
 // - datObject()
+// - createMarginObject(left, right, top, bottom)
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -54,4 +55,19 @@ function dataObject(){
 
     this.Name = "nullName";
     this.Value = 0;
+}
+
+
+//////////////////////////////////////////////////////////
+// Create an oject to store 4 margin values
+function createMarginObject(left, right, top, bottom){
+//////////////////////////////////////////////////////////
+
+    var margin = {left: 0, right: 0, top:0 , bottom:0};
+    margin.left = left;
+    margin.right = right;
+    margin.top = top;
+    margin.bottom = bottom;
+
+    return margin;
 }
