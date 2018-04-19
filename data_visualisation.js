@@ -429,3 +429,113 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
         // Create annotations when animation is complete
         setTimeout(donut_annotations,1000);
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create a line chart
+function createLineChart(height, width, margin, data_object, domid, title, xcaption, ycaption){
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Create chart of defined size in dom element
+    var chart = d3.select(domid)
+    .attr("width", width)
+    .attr("height", height);
+
+    // Main group with translate to account for left and top margins
+    var maingroup = chart.append("g").attr("transform", "translate (" + margin.left + ", " + margin.top + ")");
+
+    // Define the x and y scales
+    var x = d3.scaleLinear()
+    .rangeRound([0, width - margin.left - margin.right]);
+
+    var y = d3.scaleLinear()
+    .rangeRound([height - margin.top - margin.bottom, 0]);
+
+    // Create the graph line
+    var valueline = d3.line()
+    // X is just the index (age)
+    .x(function(d, i) { return x(i); })
+    // Y is the value (number of movies)
+    .y(function(d) { return y(d.Value); });
+
+    // Create the domains of values (from 0 to max)
+    // X is between 0 and last index
+    x.domain([0, d3.max(data_object, function(d, i) { return i; })]);
+    // Y is between 0 and max age
+    y.domain([0, d3.max(data_object, function(d) { return d.Value; })]);
+
+    // Create Left axis
+    maingroup.append("g")
+    // The axis with ticks
+    .call(d3.axisLeft(y))
+    // The left axis text
+    .append("text")
+        //.attr("fill", "#000")
+        .attr("y", -15)
+        .attr("x", 3)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "start")
+        .attr("class", "linecart-caption")
+        .text(ycaption);
+
+    // Create the bottom axis
+    maingroup.append("g")
+    .attr("transform", "translate(0," + (height - margin.bottom - margin.top) + ")")
+    .call(d3.axisBottom(x))
+    .append("text")
+        //.attr("fill", "#000")
+        .attr("x", width - margin.right)
+        .attr("y", margin.bottom)
+        .attr("dy", "-0.3em")
+        .attr("text-anchor", "end")
+        .attr("class", "linecart-caption")
+        .text(xcaption);
+
+    // Add title
+    chart.append("text")
+            .text(title)
+            .attr("class", "title")
+            .attr("y", 0)
+            .attr("dy", "1em")
+            .attr("x", width/2);
+
+    // Add the valueline path (the line) to the main group
+    var theline = maingroup.append("path")
+    .data([data_object])
+    .attr("class", "linechart-line")
+    .attr("d", valueline)
+    .attr("fill", "none");
+
+    // Get total length of the line (used for animation)
+    var totalLength = theline.node().getTotalLength();
+
+    // Animate the line using the stroke properties
+    theline.attr("stroke-dasharray", totalLength)
+    .attr("stroke-dashoffset", totalLength)
+    .transition()
+        .duration(5000)
+        .attr("stroke-dashoffset", 0);
+
+    var chart_annotations = function(){       
+
+        // Add dots at value points
+        for (var k=0; k<data_object.length; k++){
+            if (k != 0 && data_object[k].Value == data_object[k-1].Value){
+                // Don't add a dot because value has not changed
+            }
+            else {
+                // Value has changed (or first value)
+                maingroup.append("circle")
+                .attr("r", 5)
+                .attr("cx", x(k))
+                .attr("cy", y(data_object[k].Value))
+                .attr("class", "linechart-dot")
+            }
+        }
+
+    }
+
+
+    // Create annotations when animation is complete
+    setTimeout(chart_annotations,5000);
+}

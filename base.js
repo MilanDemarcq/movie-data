@@ -140,10 +140,13 @@ function getDateData(apikey){
 
 
         //// Now, make a chart of the data by age (granularity = 1 year): get the data ready
+        // Note: movies are considered under a certain age, ie age 1 actually means the movie
+        // is seen in its first year (or release year more precisely). Age 2 means under two years, 
+        // ie the following year.
 
-        // Get all the ages
+        // Get all the ages (+1 is because it's "under xx")
         var age_array = full_array.map(function(o){
-            return (o.VY - o.Year);
+            return (o.VY - o.Year + 1);
         });
 
         // Biggest age
@@ -174,10 +177,6 @@ function getDateData(apikey){
 
         //// Create Line chart with D3.js
 
-        // WIP ZONE
-
-        // All 30 are margins (60 = 2 margins)
-
         // All margins are 30 px
         var margin = createMarginObject(30,30,30,30);
 
@@ -185,93 +184,7 @@ function getDateData(apikey){
         width = 500;
         height = 400;
 
-        // Create chart of defined size in dom element
-        var chart = d3.select("#age_linechart")
-        .attr("width", width)
-        .attr("height", height);
-
-        // Main group with translate to account for left and top margins
-        var maingroup = chart.append("g").attr("transform", "translate (" + margin.left + ", " + margin.top + ")");
-
-        // Define the x and y scales
-        var x = d3.scaleLinear()
-        .rangeRound([0, width - margin.left - margin.right]);
-
-        var y = d3.scaleLinear()
-        .rangeRound([height - margin.top - margin.bottom, 0]);
-
-        // Create the graph line
-        var valueline = d3.line()
-        // X is just the index (age)
-        .x(function(d, i) { return x(i); })
-        // Y is the value (number of movies)
-        .y(function(d) { return y(d.Value); });
-
-        // Create the domains of values (from 0 to max)
-        // X is between 0 and last index
-        x.domain([0, d3.max(yearlyage, function(d, i) { return i; })]);
-        // Y is between 0 and max age
-        y.domain([0, d3.max(yearlyage, function(d) { return d.Value; })]);
-
-        // Create Left axis
-        maingroup.append("g")
-        // The axis with ticks
-        .call(d3.axisLeft(y))
-        // The left axis text
-        .append("text")
-            //.attr("fill", "#000")
-            .attr("y", -15)
-            .attr("x", 3)
-            .attr("dy", "0.71em")
-            .attr("text-anchor", "start")
-            .attr("class", "linecart-caption")
-            .text("Number of Movies");
-
-        // Create the bottom axis
-        maingroup.append("g")
-        .attr("transform", "translate(0," + (height - margin.bottom - margin.top) + ")")
-        .call(d3.axisBottom(x))
-        .append("text")
-            //.attr("fill", "#000")
-            .attr("x", width - margin.right)
-            .attr("y", margin.bottom)
-            .attr("dy", "-0.3em")
-            .attr("text-anchor", "end")
-            .attr("class", "linecart-caption")
-            .text("Movie Age");
-
-        // Add title
-        chart.append("text")
-                .text("Age Distribution")
-                .attr("class", "title")
-                .attr("y", 0)
-                .attr("dy", "1em")
-                .attr("x", width/2);
-
-        // Add the valueline path (the line) to the main group
-        var theline = maingroup.append("path")
-        .data([yearlyage])
-        .attr("class", "linechart-line")
-        .attr("d", valueline)
-        .attr("fill", "none");
-
-        // Get total length of the line (used for animation)
-        var totalLength = theline.node().getTotalLength();
-
-        // Animate the line using the stroke properties
-        theline.attr("stroke-dasharray", totalLength)
-        .attr("stroke-dashoffset", totalLength)
-        .transition()
-            .duration(5000)
-            .attr("stroke-dashoffset", 0);
-        
-
-
-
-        // END WIP ZONE
-
-
-
+        createLineChart(height, width, margin, yearlyage, "#age_linechart", "Age Distribution", "Movie Age", "Number of Movies");
 
     }); // airtableApiGet callback end
 }
