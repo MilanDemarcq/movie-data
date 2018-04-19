@@ -111,7 +111,7 @@ function getDateData(apikey){
         $('#average_age').append(Math.round(avg_age*100)/100).append(" years");
 
         // Sort movies into categories according to time difference between release and viewing
-        var categories = ["Release Year", "1 year after", "Less than 3 years after", "Less than 5 years after", "Less than 10 years after", "More than 10 years after"];
+        var categories = ["Release Year", "Following year", "Under 3 years", "Under 5 years", "Under 10 years", "More than 10 years after"];
 
         //Create an array of defined type
         var date_cat = createDataStructure(categories.length);
@@ -136,7 +136,11 @@ function getDateData(apikey){
         }
 
         // Make the BarChart
-        createBarChart(500, 20, date_cat, "#age_barchart", "inside", "Age Categories");
+        //createBarChart(500, 20, date_cat, "#age_barchart", "inside", "Age Categories");
+
+        // Make a donut chart
+        createDonutChart(400, 500, 200, date_cat, "#age_barchart", "black", "lightgrey");
+        //function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcolor, endcolor, callback){
 
 
         //// Now, make a chart of the data by age (granularity = 1 year): get the data ready
@@ -178,7 +182,7 @@ function getDateData(apikey){
         //// Create Line chart with D3.js
 
         // All margins are 30 px
-        var margin = createMarginObject(30,30,30,30);
+        var margin = createMarginObject(30,30,50,30);
 
         // Chart total size
         width = 500;

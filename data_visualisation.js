@@ -471,9 +471,9 @@ function createLineChart(height, width, margin, data_object, domid, title, xcapt
     // The left axis text
     .append("text")
         //.attr("fill", "#000")
-        .attr("y", -15)
+        .attr("y", -16)
         .attr("x", 3)
-        .attr("dy", "0.71em")
+        .attr("dy", "0.5em")
         .attr("text-anchor", "start")
         .attr("class", "linecart-caption")
         .text(ycaption);
@@ -520,16 +520,31 @@ function createLineChart(height, width, margin, data_object, domid, title, xcapt
 
         // Add dots at value points
         for (var k=0; k<data_object.length; k++){
-            if (k != 0 && data_object[k].Value == data_object[k-1].Value){
+            if ((k != 0 && data_object[k].Value == data_object[k-1].Value) || (k == 0)){
                 // Don't add a dot because value has not changed
             }
             else {
                 // Value has changed (or first value)
+
+                // Test if represent a peak or a bottom
+                var type = "classic";
+                var circle_size = 4;
+
+                if (k != 0 && k != data_object.length-1){ // Not first or last point
+                    if (data_object[k].Value > data_object[k-1].Value && data_object[k].Value > data_object[k+1].Value){
+                        type = "peak";
+                        circle_size = 6;
+                    }
+                    else if (data_object[k].Value < data_object[k-1].Value && data_object[k].Value < data_object[k+1].Value) {
+                        type = "bottom";
+                    }
+                }
+
                 maingroup.append("circle")
-                .attr("r", 5)
+                .attr("r", circle_size)
                 .attr("cx", x(k))
                 .attr("cy", y(data_object[k].Value))
-                .attr("class", "linechart-dot")
+                .attr("class", "linechart-dot" + "-" + type);
             }
         }
 

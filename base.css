@@ -215,7 +215,17 @@ text.pie-inner-circle{
 }
 
 
-.linechart-dot{
+.linechart-dot-classic{
+	fill: grey;
+	opacity: 0.6;
+}
+
+.linechart-dot-peak{
+	fill: #DE8D47;
+	opacity: 0.5;
+}
+
+.linechart-dot-bottom{
 	fill: #DE8D47;
 	opacity: 0.6;
 }
