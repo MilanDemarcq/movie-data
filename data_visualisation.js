@@ -125,8 +125,8 @@ function createBarChart(width, barheight, data, domid, info_loc, chart_title){
                 // Size of text
                 var text_width = parseInt(mytext.attr("mylength"));
 
-                // If text fits, ok, if not, move it.
-                if (text_width < rect_width){
+                // If text fits, ok, if not, move it. Add 20 to account for the space used by the value
+                if (text_width + 20 < rect_width){
 
                 } else {
                     //alert("Text : " + text_width + ".... Rect : " + rect_width);

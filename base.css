@@ -3,6 +3,8 @@
 
 body {
     background-color: #333333;
+    background-color: #293144;
+    background-color: #1E2A31;
 }
 
 /*Classic Title elements*/
@@ -23,12 +25,6 @@ h2 {
     font-size: 20px;  
 }
 
-h2 .SectionTitle
-{
-	background-color: #F0F0F0;
-    color: #333333;
-    display: inline-block;
-}
 
 #maintitle {
 	border-left: 5px solid #F0F0F0;
@@ -39,17 +35,16 @@ h2 .SectionTitle
 /*Info blocks*/
 
 .Info {
-	background-color: #404040;
-	margin-left: auto;
-	margin-right: auto;
+	/*margin-left: auto;
+	margin-right: auto;*/
 	margin-top: 15px;
 	margin-bottom: 15px;
-	width: 50%;
-	min-height: 300px;
+/*	width: 50%;*/
+	/*min-height: 300px;*/
 	padding-left: 20px;
 	padding-bottom: 15px;
 	color: #F0F0F0;
-	border-left: 4px solid #F0F0F0;
+	/*border-left: 4px solid #F0F0F0;*/
 	text-align: left;
 	display: table;
 }
@@ -160,10 +155,10 @@ text.inside_info{
 }
 
 
-#VisionGraphs div{
+/*#VisionGraphs div{
 	margin: auto;
     width: 80%;
-}
+}*/
 
 .donut_arc{
 /*	stroke: #404040;
@@ -261,6 +256,33 @@ text.pie-inner-circle{
 .stars-out {
 	display: block;
 	z-index: 0;
-	color: #F0F0F0;
-	color: #333333;
+/*	color: #F0F0F0;*/
+	color: #141b20;
+}
+
+
+/*Customize bootstrap elements*/
+
+.well {
+	background-color: #2B3942;
+	border: none;
+	border-radius: 4px;
+	padding-top: 0px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.glyphicon {
+	top: 3px;
+	font-size: smaller;
+}
+
+/*Elements created to associate with bootstrap elements*/
+.wellcontent {
+	margin-left: 10px;
+}
+
+.welltitle
+{
+    color: #b4bfc3;
 }

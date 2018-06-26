@@ -8,44 +8,78 @@
 
     <title>Base</title>
 
+    <!-- Bootstrap core css -->
+    <link href="libs/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom style css -->
     <link rel="stylesheet" type="text/css" href="base.css">
 
   </head>
 
   <body>
 
-    <div id="maintitle" >
-    <h1> Movie Data. </h1>
-    <!-- <hr align="left" width="25%">  -->
-    </div>
+    <!-- Start Content -->
 
-    <div id="BaseInfo" class="Info">
-        <h2> <span class="SectionTitle"> GENERAL INFO ON BASE </span></h2>
-        <div id="BasicStats" class="StatSpace">
-            <div id="TotalCount"> Number of Movies: </div>
+    <div class="container"> <!-- Main Bootstrap container Start -->
+
+        <div class="row">
+            <div id="maintitle" >
+            <h1> Movie Data. </h1>
+            <!-- <hr align="left" width="25%">  -->
+            </div>
         </div>
-    </div>
 
-    <div id="VisionInfo" class="Info">
-        <h2><span class="SectionTitle"> VISION INFO </span></h2>
+        <div class="row">
+            <div class="col-lg-offset-2 col-lg-4 Info well" id="BaseInfo">
 
-<!--         <div id="VisionStats" class="StatSpace">
-            <div> Netflix : </div>
-            <div> Theatre : </div>
-            <div> Streaming : </div>
-            <div> Download : </div>
-            <div> TV : </div>
-            <div> Other : </div>
-        </div> -->
+                <div class="welltitle"> <h2> <span class="glyphicon glyphicon-chevron-right"> </span> <span> General Base Info </span></h2></div>
 
-
-        <div id="VisionGraphs" class="GraphSpace">
-            <div><svg id="visionsbarchart" class="barchart"></svg></div>
-            <div><svg id="visonpiechart"></svg></div>
+                <div id="BasicStats" class="StatSpace wellcontent">
+                    <div id="TotalCount"> Number of Movies: </div>
+                </div>
+            </div>
+            <div class="col-lg-6"></div>
         </div>
-    </div>
 
-    <div id="Ratings Info" class="Info">
+        <div class="row">
+            <div class="col-lg-offset-1 col-md-offset-2 col-lg-4 col-md-6 Info well" id="VisionInfo">
+                <div class="welltitle"> <h2> <span class="glyphicon glyphicon-chevron-right"> </span> <span> Vision Info </span></h2></div>
+
+                <div id="VisionGraphs" class="GraphSpace wellcontent">
+                    <div><svg id="visionsbarchart" class="barchart"></svg></div>
+                    <div><svg id="visonpiechart"></svg></div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-4 Info well" id="RatingInfo">
+
+                <div class="welltitle"> <h2> <span class="glyphicon glyphicon-chevron-right"> </span> <span> Ratings Info </span></h2></div>
+
+                <div class="StatSpace wellcontent" id="RatingStats">
+
+                    <div id="verboserating"> Average Rating: </div>
+                    
+                    <div class="starsrating">
+                        <div id="av_stars" class="stars-in" style="width: 0%"> <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span> </div>
+                        <div class="stars-out"> <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span> </div>
+                    </div>
+
+                </div>
+                <div id="RatingGraphs" class="GraphSpace">
+                    <svg id=ratingbarchart class="barchart"></svg>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+    </div> <!-- Main Bootstrap container End -->
+
+
+<!--     <div id="Ratings Info" class="Info">
 
         <h2><span class="SectionTitle"> RATINGS INFO </span></h2>
 
@@ -64,7 +98,7 @@
         <div id="RatingGraphs" class="GraphSpace">
             <svg id=ratingbarchart class="barchart"></svg>
         </div>
-    </div>
+    </div> -->
 
     <div id="Date Info" class="Info">
 
@@ -105,6 +139,8 @@
     <script src="data_treatment.js"></script>
     <!-- Miscellaneous -->
     <script src="misc.js"></script>
+    <!-- Bootstrap to use with jQuery-->
+    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
 
   </body>
 

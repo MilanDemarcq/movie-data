@@ -39,11 +39,22 @@ $(function() {
             $('#TotalCount').append(full_base_length);
         });
 
-        // Vision Stats
-        getVisionData(apikey);
+        // Click Event on Vision Info Chevron
+        $('#VisionInfo .glyphicon-chevron-right').on('click', function(event){
 
-        // Rating Stats
-        getRatingData(apikey);
+            // Vision Stats
+            getVisionData(apikey);
+
+        });
+
+        // Click Event on Rating Info Chevron
+        $('#RatingInfo .glyphicon-chevron-right').on('click', function(event){
+
+            // Rating Stats
+            getRatingData(apikey);
+
+        });
+
 
         // Date Stats
         getDateData(apikey);
