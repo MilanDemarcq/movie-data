@@ -18,6 +18,30 @@
 
   <body>
 
+        <!--Adding jQuery, jQuery UI, Axios and D3.js libraries--> 
+        <script src="libs/jquery.js"></script>
+        <script src="libs/jquery-ui.js"></script>
+        <script src="libs/d3.js"></script>
+        <script src="libs/axios.min.js"></script>
+
+        <!--Main JS file (jQuery based)--> 
+        <script src="base.js"></script>
+
+        <!--Functions in JS--> 
+        <!-- Data Structures -->
+        <script src="data_structures.js"></script>
+        <!-- Data Visualisation -->
+        <script src="data_visualisation.js"></script>
+        <!-- Airtable API related -->
+        <script src="airtable_api_func.js"></script>
+        <!-- Data Treatment -->
+        <script src="data_treatment.js"></script>
+        <!-- Miscellaneous -->
+        <script src="misc.js"></script>
+
+        <!-- Bootstrap to use with jQuery-->
+        <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+
     <!-- Start Content -->
 
     <div class="container"> <!-- Main Bootstrap container Start -->
@@ -30,7 +54,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-offset-2 col-lg-4 Info well" id="BaseInfo">
+            <div class="col-lg-offset-2 col-lg-4 col-md-4 Info well" id="BaseInfo">
 
                 <div class="welltitle"> <h2> <span class="glyphicon glyphicon-chevron-right"> </span> <span> General Base Info </span></h2></div>
 
@@ -52,7 +76,7 @@
             </div>
 
 
-            <div class="col-lg-4 Info well" id="RatingInfo">
+            <div class="col-lg-4 col-md-6 Info well" id="RatingInfo">
 
                 <div class="welltitle"> <h2> <span class="glyphicon glyphicon-chevron-right"> </span> <span> Ratings Info </span></h2></div>
                 <div class="wellcontent">
@@ -65,7 +89,7 @@
 
          <div class="row">
 
-            <div class="col-lg-offset-2 col-lg-6 Info well" id="DateInfo">
+            <div class="col-lg-12 Info well" id="DateInfo">
 
                 <div class="welltitle"> <h2> <span class="glyphicon glyphicon-chevron-right"> </span> <span> Date Info </span></h2></div>
 
@@ -82,39 +106,10 @@
     </div> <!-- Main Bootstrap container End -->
 
 
+    <div id="testarray2" class="test"></div>
+    <div id="testarray" class="test"></div>
 
-
-    <div id="testarray2" class="Test"></div>
-    <div id="testarray" class="Test"></div>
-
-    <div id="texteJQ" class="Note"></div>
-
-
-
-
-    
-
-    <!--Adding jQuery Axios and D3.js libraries--> 
-    <script src="libs/jquery.js"></script>
-    <script src="libs/d3.js"></script>
-    <script src="libs/axios.min.js"></script>
-
-    <!--Main JS file (jQuery based)--> 
-    <script src="base.js"></script>
-
-    <!--Functions in JS--> 
-    <!-- Data Structures -->
-    <script src="data_structures.js"></script>
-    <!-- Data Visualisation -->
-    <script src="data_visualisation.js"></script>
-    <!-- Airtable API related -->
-    <script src="airtable_api_func.js"></script>
-    <!-- Data Treatment -->
-    <script src="data_treatment.js"></script>
-    <!-- Miscellaneous -->
-    <script src="misc.js"></script>
-    <!-- Bootstrap to use with jQuery-->
-    <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <div id="texteJQ" class="note"></div>
 
   </body>
 

@@ -284,7 +284,7 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
 
         // Create SVG diagram
         var mysvg=d3.select(domid)
-        .attr("width", "100%")
+        .attr("width", w)
         .attr("height", h);
 
         // The main group

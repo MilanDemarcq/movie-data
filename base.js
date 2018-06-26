@@ -39,6 +39,16 @@ $(function() {
             $('#TotalCount').append(full_base_length);
         });
 
+        // Make wells draggable
+        // $(function(){
+
+        //     $('#BaseInfo').draggable();
+        //     $('#VisionInfo').draggable();
+        //     $('#RatingInfo').draggable();
+        //     $('#DateInfo').draggable();
+
+        // });
+
         // Click Event on Vision Info Chevron
         $('#VisionInfo').on('click', function(event){
 
@@ -130,10 +140,11 @@ function getDateData(apikey){
                 <div id="average_year"> Average Release Year of movies: </div>\
                 <div id="average_age"> Average Age of movies at time of viewing: </div>\
                 <br>\
-                <svg id="age_barchart" class="donutchart"></svg>\
-                <br>\
-                <br>\
-                <svg id="age_linechart" class="linechart"></svg>');
+                <div class="row">\
+                    <div class="col-lg-6"><svg class="donutchart center-block" id="age_barchart"></svg></div>\
+                    <div class="col-lg-6"><svg class="linechart center-block" id="age_linechart"></svg></div>\
+                </div>\
+                ');
 
         }
 
