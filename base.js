@@ -40,24 +40,41 @@ $(function() {
         });
 
         // Click Event on Vision Info Chevron
-        $('#VisionInfo .glyphicon-chevron-right').on('click', function(event){
+        $('#VisionInfo').on('click', function(event){
 
+            // Remove please click
+            $('#VisionInfo .pleaseclick').hide();
             // Vision Stats
             getVisionData(apikey);
+            // Unbind
+            $('#VisionInfo').unbind( "click" );
 
         });
 
         // Click Event on Rating Info Chevron
-        $('#RatingInfo .glyphicon-chevron-right').on('click', function(event){
+        $('#RatingInfo').on('click', function(event){
 
+            // Remove please click
+            $('#RatingInfo .pleaseclick').hide();
             // Rating Stats
             getRatingData(apikey);
+            // Unbind
+            $('#RatingInfo').unbind( "click" );
 
         });
 
+        // Click Event on Date Info Chevron
+        $('#DateInfo').on('click', function(event){
 
-        // Date Stats
-        getDateData(apikey);
+            // Remove please click
+            $('#DateInfo .pleaseclick').hide();
+            // Date Stats
+            getDateData(apikey);
+            // Unbind
+            $('#DateInfo').unbind( "click" );
+
+        });
+
 
     });
 
@@ -105,6 +122,21 @@ function getDateData(apikey){
 
         //// OK, new container is done
 
+        // Check if first click
+        if ($('#average_year').length == 0){
+
+            // Add HTML elements
+            $('#DateInfo .wellcontent').append('\
+                <div id="average_year"> Average Release Year of movies: </div>\
+                <div id="average_age"> Average Age of movies at time of viewing: </div>\
+                <br>\
+                <svg id="age_barchart" class="donutchart"></svg>\
+                <br>\
+                <br>\
+                <svg id="age_linechart" class="linechart"></svg>');
+
+        }
+
         // Calculate average year and average date
         var avg_year = 0;
         var avg_age = 0;
@@ -150,7 +182,7 @@ function getDateData(apikey){
         //createBarChart(500, 20, date_cat, "#age_barchart", "inside", "Age Categories");
 
         // Make a donut chart
-        createDonutChart(400, 500, 200, date_cat, "#age_barchart", "black", "lightgrey");
+        createDonutChart(400, 500, 200, date_cat, "#age_barchart", "#2A6180", "#FF7200");
         //function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcolor, endcolor, callback){
 
 
@@ -247,8 +279,26 @@ function getRatingData(apikey){
         // Get mean
         mean_rating = rsum/count;
 
-        // Print results: average
-        $('#RatingStats div:first').append(Math.round(mean_rating*10)/10).append(" / 10");
+        // Check if first click
+        if ($('#RatingStats').length == 0){
+
+            // Add HTML elements
+            $('#RatingInfo .wellcontent').append('\
+                <div class="StatSpace" id="RatingStats">\
+                    <div id="verboserating"> Average Rating: </div>\
+                    <div class="starsrating">\
+                        <div id="av_stars" class="stars-in" style="width: 0%"> <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span> </div>\
+                        <div class="stars-out"> <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span> </div>\
+                    </div>\
+                </div>\
+                <div id="RatingGraphs" class="GraphSpace">\
+                    <svg id=ratingbarchart class="barchart"></svg>\
+                </div>');
+
+             // Print results: average
+            $('#RatingStats div:first').append(Math.round(mean_rating*10)/10).append(" / 10");
+
+        }
 
         // Print results on stars
         var star_percent = Math.round(mean_rating*10);
@@ -293,6 +343,19 @@ function getVisionData(apikey){
            });
 
         });
+
+
+        // Check if first click
+        if ($('#VisionGraphs').length == 0){
+
+            // Add HTML elements
+            $('#VisionInfo .wellcontent').append('\
+                <div id="VisionGraphs" class="GraphSpace">\
+                    <div><svg id="visionsbarchart" class="barchart"></svg></div>\
+                    <div><svg id="visonpiechart"></svg></div>\
+                </div>');
+
+        }
 
         // Create a bar chart
 

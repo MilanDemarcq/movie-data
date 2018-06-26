@@ -286,3 +286,9 @@ text.pie-inner-circle{
 {
     color: #b4bfc3;
 }
+
+.pleaseclick {
+	margin-left: 15px;
+	color: #5B6E96;
+	font-size: smaller;
+}
