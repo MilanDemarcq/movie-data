@@ -10,7 +10,10 @@ Used languages and libraries for this project are:
     * *jQuery*
     * *Axios.js*
     * *D3.js*
-* **CSS**
+    
+* **CSS** with the following library:
+	* *Bootstrap*
+
 * **HTML**
 
 Library files are stored in */libs/*.
