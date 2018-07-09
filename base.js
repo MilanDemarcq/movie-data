@@ -8,6 +8,11 @@ var apiURL = "https://api.airtable.com/v0/";
 // Airtable Table URL
 var tableURL = "/Table%201";
 
+// API Key for Airtable is read from this file
+var apikeyfile = "apikey";
+// Null API Key var
+var apikey;
+
 
 //// MAIN
 
@@ -16,11 +21,9 @@ $(function() {
     // Display JQuery status and other info.
 	$('#texteJQ').html('JQuery is RUNNING. <br>');
 
-    // API Key for Airtable is read from this file
-    var apikeyfile = "apikey";
-    // Null API Key var
-    var apikey;
- 
+    //$('.Info').hide();
+    $('body .container').append('<div class="loading centered"> <span class="glyphicon glyphicon-fire"></span> Fetching API Key, Connecting to Airtable ...</div>');
+
     // First, read the API Key from the local file it's stored in.
     $('h1').queue("operations", function(){
         var self = this;
@@ -33,10 +36,26 @@ $(function() {
     // Once API Key is known, API calls can be made.
     $('h1').queue("operations", function(){
 
+        $('.loading').append("<br> API Key loaded.");
+
         // Get full base from Airtable, display it and get the size
         getfullAirtableData(apikey, function(full_base_length){
             // Display total count in the corresponding info div
             $('#TotalCount').append(full_base_length);
+            $('.loading').append("<br> Airtable reached.");
+
+            // Hide loading message and display the info widgets
+            $('.loading').hide();
+            $('.Info').show(400).css("display", "table");
+
+            // Display all the .Info elements one by one
+            // $('.Info').each(function(i){
+            //     var self = this
+            //     setTimeout(function () {
+            //         $(self).show(300);
+            //     }, i*300);
+            // });
+
         });
 
         // Make wells draggable
@@ -85,6 +104,18 @@ $(function() {
 
         });
 
+        // Click Event on Ranking Info Chevron
+        $('#RankingInfo').on('click', function(event){
+
+            // Remove please click
+            $('#RankingInfo .pleaseclick').hide();
+            // Select the desired ranking
+            askRankingData();
+            // Unbind
+            $('#RankingInfo').unbind( "click" );
+
+        });
+
 
     });
 
@@ -97,6 +128,100 @@ $(function() {
 
 
 //// FUNCTIONS
+
+///////////////////////////////////////////
+// Ask what type of ranking is wanted
+function askRankingData(){
+///////////////////////////////////////////
+
+    $('#RankingInfo .wellcontent').append('<div> Select the desired ranking type : <br><br></div>');
+
+    $('#RankingInfo .wellcontent').append('\
+        <div class="form-group form-inline">\
+            <span> The </span>\
+            <select class="form-control" id="sel1">\
+                <option>Best Rated</option>\
+                <option>Worst Rated</option>\
+            </select>\
+            <span> movies that  </span>\
+            <select class="form-control" id="sel2">\
+                <option>Came out</option>\
+                <option>Were watched</option>\
+            </select>\
+            <span> in the year </span>\
+            <select class="form-control" id="sel3">\
+                <option>2018</option>\
+                <option>2017</option>\
+                <option>2016</option>\
+                <option>2015</option>\
+                <option>2014</option>\
+                <option>2013</option>\
+                <option>2012</option>\
+            </select>\
+            <button type="submit" class="btn btn-primary">Submit</button>\
+        </div> ');
+
+
+    // Click Event on Submit
+    $('#RankingInfo button').on('click', function(event){
+
+        var rankorder = $('#RankingInfo #sel1').find(":selected").text();
+        var yeartype = $('#RankingInfo #sel2').find(":selected").text();
+        var year = $('#RankingInfo #sel3').find(":selected").text();
+
+        getRankingData(rankorder, yeartype, year);
+
+    });
+
+
+}
+
+///////////////////////////////////////////
+// Get Ranking data
+function getRankingData(rankorder, yeartype, year){
+///////////////////////////////////////////
+
+    // Filter by year of apparition or year of vision
+    if (yeartype == "Came out"){
+        // The year to display
+        yearsort = '(Year = ' + year + ')';
+    } else {
+        yearsort = '(VY = ' + year + ')';
+    }
+
+
+    // Get full base
+    airtableApiGet(apikey, "", yearsort, function(response_data){
+
+        // Sort the field by asc or desc rating
+        var sorted_fields = response_data.data.records.sort(function(a,b){
+            if (rankorder == "Best Rated"){
+                return b.fields.N - a.fields.N;
+            } else {
+                return a.fields.N - b.fields.N;
+            }
+        });
+
+        if ($('#RankingInfo .wellcontent table').length != 0){
+            $('#RankingInfo .wellcontent table').remove();
+        }
+
+        // Add a table
+        $('#RankingInfo .wellcontent').append('<table class="table table-hover"></table>');
+        $('#RankingInfo .wellcontent table').append('<thead><tr><th>Movie</th><th>Director</th><th>Rating</th></tr></thead');
+        $('#RankingInfo .wellcontent table').append('<tbody></tbody>');
+
+        for (var i = 0; i<sorted_fields.length; i++){
+
+            // Fill table with the resulting movies
+            $('#RankingInfo .wellcontent tbody').append("<tr> <th>" + sorted_fields[i].fields.Name + "</th><th>" +  sorted_fields[i].fields.Director + "</th><th>" + "★".repeat(sorted_fields[i].fields.N) + "  (" + sorted_fields[i].fields.N + ")  " + "</th> </tr>");
+
+        }
+
+    });
+
+
+}
 
 ///////////////////////////////////////////
 // Get data about movie's release date

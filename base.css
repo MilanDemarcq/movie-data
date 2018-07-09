@@ -25,7 +25,6 @@ h2 {
     font-size: 20px;  
 }
 
-
 #maintitle {
 	border-left: 5px solid #F0F0F0;
 	margin-left: 300px;
@@ -47,6 +46,7 @@ h2 {
 	/*border-left: 4px solid #F0F0F0;*/
 	text-align: left;
 	display: table;
+	display: none;
 }
 
 /*Side by side stat and graph blocks*/
@@ -262,6 +262,12 @@ text.pie-inner-circle{
 	color: #141b20;
 }
 
+.loading{
+	color: #CDD6DA;
+    text-align: center;
+    margin-top: 25%;
+}
+
 
 /*Customize bootstrap elements*/
 
@@ -278,6 +284,45 @@ text.pie-inner-circle{
 	top: 3px;
 	font-size: smaller;
 }
+
+.form-control {
+	margin-left: 10px;
+	margin-right: 10px;
+	color: #c3bebe;
+	background-color: #1e2a31;
+	border: 1px solid #162229;
+}
+
+.form-control:focus{
+	box-shadow: none;
+	border: none;
+}
+
+.table {
+	width: 100%;
+	/*margin-left: auto;
+	margin-right: auto;*/
+	color: #CDD6DA;
+	/*background-color: #1E2A31;*/
+}
+
+.table thead tr{
+	border-bottom: 1px solid #5e6971;
+	background-color: #1e2a3199;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #1E2A31;
+}
+
+.table tbody th{
+	font-weight: normal;
+}
+
+.table tbody tr{
+	border-top: 1px solid #ddd;
+}
+
 
 /*Elements created to associate with bootstrap elements*/
 .wellcontent {
