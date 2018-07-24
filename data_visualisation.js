@@ -433,7 +433,7 @@ function createDonutChart(h, w, chart_inner_margin, data_object, domid, startcol
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Create a line chart
-function createLineChart(height, width, margin, data_object, domid, title, xcaption, ycaption){
+function createLineChart(height, width, margin, data_object, domid, title, xcaption, ycaption, decorate){
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Create chart of defined size in dom element
@@ -550,7 +550,11 @@ function createLineChart(height, width, margin, data_object, domid, title, xcapt
 
     }
 
+    if (decorate){
+        
+        // Create annotations when animation is complete
+        setTimeout(chart_annotations,5000);
 
-    // Create annotations when animation is complete
-    setTimeout(chart_annotations,5000);
+    }
+
 }

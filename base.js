@@ -39,22 +39,30 @@ $(function() {
         $('.loading').append("<br> API Key loaded.");
 
         // Get full base from Airtable, display it and get the size
-        getfullAirtableData(apikey, function(full_base_length){
-            // Display total count in the corresponding info div
-            $('#TotalCount').append(full_base_length);
-            $('.loading').append("<br> Airtable reached.");
 
-            // Hide loading message and display the info widgets
-            $('.loading').hide();
-            $('.Info').show(400).css("display", "table");
+        //getfullAirtableData(apikey, function(full_base_length){
+        getfullestAirtableData("", "", function(response){
 
-            // Display all the .Info elements one by one
-            // $('.Info').each(function(i){
-            //     var self = this
-            //     setTimeout(function () {
-            //         $(self).show(300);
-            //     }, i*300);
-            // });
+            parseBase(response, "#testarray", function(full_base_length){
+
+                // Display total count in the corresponding info div
+                $('#TotalCount').append(full_base_length);
+                $('.loading').append("<br> Airtable reached.");
+
+                // Hide loading message and display the info widgets
+                $('.loading').hide();
+                $('.Info').show(400).css("display", "table");
+
+                // Display all the .Info elements one by one
+                // $('.Info').each(function(i){
+                //     var self = this
+                //     setTimeout(function () {
+                //         $(self).show(300);
+                //     }, i*300);
+                // });
+                
+            });
+
 
         });
 
@@ -116,6 +124,18 @@ $(function() {
 
         });
 
+        // Click Event on Cross Date & Vision Info Chevron
+        $('#CrossDateVisionInfo').on('click', function(event){
+
+            // Remove please click
+            $('#CrossDateVisionInfo .pleaseclick').hide();
+            // Date Stats
+            getCrossVisionInfoData();
+            // Unbind
+            $('#CrossDateVisionInfo').unbind( "click" );
+
+        });
+
 
     });
 
@@ -128,6 +148,119 @@ $(function() {
 
 
 //// FUNCTIONS
+
+///////////////////////////////////////////
+// Get Data crossed btw Date & Vision
+function getCrossVisionInfoData(){
+///////////////////////////////////////////
+
+    // Create a vertical barchart that shows disctribution of vision types for some date groups : 
+    // Year 0 (VY - Year = 0)
+    // Following Year (VY - Year = 1)
+    // Two years later (VY - Year = 2)
+    // Three years later (VY - Year = 3)
+    // Less than 5 years later (VY - Year <= 5)
+    // Less than 10 years later (VY - Year <= 10)
+    // Less than 20 years later (VY - Year <= 20)
+    // More than 20 years later (VY - Year > 20)
+
+    // Get the data ready
+
+    // Get full base
+    getfullestAirtableData("", "", function(response_data){
+
+        // Easyer to use
+        var temp = response_data.data.records;
+
+        // Array to store objets by date categories
+        var years = [];
+
+        // Sort the elements by date categories
+        years[0] = temp.filter(element => element.fields.VY - element.fields.Year == 0);
+        years[1] = temp.filter(element => element.fields.VY - element.fields.Year == 1);
+        years[2] = temp.filter(element => element.fields.VY - element.fields.Year == 2);
+        years[3] = temp.filter(element => element.fields.VY - element.fields.Year == 3);
+        years[4] = temp.filter(element => element.fields.VY - element.fields.Year <= 5 && element.fields.VY - element.fields.Year > 3);
+        years[5] = temp.filter(element => element.fields.VY - element.fields.Year <= 10 && element.fields.VY - element.fields.Year > 5);
+        years[6] = temp.filter(element => element.fields.VY - element.fields.Year <= 20 && element.fields.VY - element.fields.Year > 10);
+        years[7] = temp.filter(element => element.fields.VY - element.fields.Year > 20);
+
+        // Ok date data is ready        
+
+        //// Get the vision type repartition for each date category
+
+        var vision_distribution = [];
+
+        for (var i = 0; i<years.length; i++){
+            vision_distribution.push({
+                NX: Math.round(100 * years[i].filter(element => element.fields.Vision == "NX").length / years[i].length),
+                CN: Math.round(100 * years[i].filter(element => element.fields.Vision == "CN").length / years[i].length),
+                ST: Math.round(100 * years[i].filter(element => element.fields.Vision == "ST").length / years[i].length),
+                DL: Math.round(100 * years[i].filter(element => element.fields.Vision == "DL").length / years[i].length),
+                TV: Math.round(100 * years[i].filter(element => element.fields.Vision == "TV").length / years[i].length),
+                AU: Math.round(100 * years[i].filter(element => element.fields.Vision == "AU").length / years[i].length)
+            });
+        }
+
+
+        console.log(vision_distribution);
+
+        //// Get the DOM ready to receive the SVG chart : 
+
+        // Add HTML elements
+        $('#CrossDateVisionInfo .wellcontent').append('\
+            <div class="row">\
+                <div class="col-lg-12"><svg class="multibar barchart center-block" id="date_vision_barchart"></svg></div>\
+            </div>\
+        ');
+
+
+        /////// D3 START
+
+        var domid = "#date_vision_barchart";
+
+        var width = 500;
+        var height = 500;
+
+        var data = years;
+
+        var barwidth = 50;
+
+        // Create y scale : max value is 100 since it's %
+        var y = d3.scaleLinear().domain([0, 100]).range([0, height]);
+
+        // Title: assume vertical size of non-null title
+        var titlesize = 25;
+
+        // Create chart and specify its size
+        var chart = d3.select(domid)
+            .attr("height", height + titlesize)
+            .attr("width", ((barwidth+2) * data.length));
+
+
+        margin = {top: 20, right: 20, bottom: 20, left: 20};
+
+        // Create the chart's bars
+        var bar = chart.selectAll("g").enter()
+            .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+        console.log(bar);
+
+
+
+        /////// D3 END
+
+
+
+
+        
+    });
+
+
+}
+
 
 ///////////////////////////////////////////
 // Ask what type of ranking is wanted
@@ -189,9 +322,9 @@ function getRankingData(rankorder, yeartype, year){
         yearsort = '(VY = ' + year + ')';
     }
 
-
     // Get full base
-    airtableApiGet(apikey, "", yearsort, function(response_data){
+    getfullestAirtableData(yearsort, "", function(response_data){
+    //airtableApiGet(apikey, "", yearsort, function(response_data){
 
         // Sort the field by asc or desc rating
         var sorted_fields = response_data.data.records.sort(function(a,b){
@@ -216,6 +349,18 @@ function getRankingData(rankorder, yeartype, year){
             // Fill table with the resulting movies
             $('#RankingInfo .wellcontent tbody').append("<tr> <th>" + sorted_fields[i].fields.Name + "</th><th>" +  sorted_fields[i].fields.Director + "</th><th>" + "★".repeat(sorted_fields[i].fields.N) + "  (" + sorted_fields[i].fields.N + ")  " + "</th> </tr>");
 
+            if (sorted_fields[i].fields.N == 10){
+                $('#RankingInfo .wellcontent tbody').find('tr:last-of-type').find('th:first-of-type').prepend('<span class="symbol">🏆</span>');
+            } else if (sorted_fields[i].fields.N == 9){
+                $('#RankingInfo .wellcontent tbody').find('tr:last-of-type').find('th:first-of-type').prepend('<span class="symbol">💙</span>');
+            } else if (sorted_fields[i].fields.N == 1){
+                $('#RankingInfo .wellcontent tbody').find('tr:last-of-type').find('th:first-of-type').prepend('<span class="symbol">🚀</span>');
+            } else if (sorted_fields[i].fields.N == 0){
+                $('#RankingInfo .wellcontent tbody').find('tr:last-of-type').find('th:first-of-type').prepend('<span class="symbol">🕒</span>');
+            } else if (sorted_fields[i].fields.N <= 5){
+                $('#RankingInfo .wellcontent tbody').find('tr:last-of-type').find('th:first-of-type').prepend('<span class="symbol red">✘</span>');
+            }           
+
         }
 
     });
@@ -229,7 +374,8 @@ function getDateData(apikey){
 ///////////////////////////////////////////
 
     // Get full base
-    airtableApiGet(apikey, "", "", function(response_data){
+    getfullestAirtableData("", "", function(response_data){
+    //airtableApiGet(apikey, "", "", function(response_data){
 
         //// First, put the received Object in a more convenient format (classic JS Object)
 
@@ -266,8 +412,8 @@ function getDateData(apikey){
                 <div id="average_age"> Average Age of movies at time of viewing: </div>\
                 <br>\
                 <div class="row">\
-                    <div class="col-lg-6"><svg class="donutchart center-block" id="age_barchart"></svg></div>\
-                    <div class="col-lg-6"><svg class="linechart center-block" id="age_linechart"></svg></div>\
+                    <div class="col-lg-6 col-md-8"><svg class="donutchart center-block" id="age_barchart"></svg></div>\
+                    <div class="col-lg-6 col-md-8"><svg class="linechart center-block" id="age_linechart"></svg></div>\
                 </div>\
                 ');
 
@@ -364,10 +510,10 @@ function getDateData(apikey){
         var margin = createMarginObject(30,30,50,30);
 
         // Chart total size
-        width = 500;
+        width = 550;
         height = 400;
 
-        createLineChart(height, width, margin, yearlyage, "#age_linechart", "Age Distribution", "Movie Age", "Number of Movies");
+        createLineChart(height, width, margin, yearlyage, "#age_linechart", "Age Distribution", "Movie Age", "Number of Movies", false);
 
     }); // airtableApiGet callback end
 }
@@ -379,7 +525,8 @@ function getRatingData(apikey){
 
     // Get full base
     // Could be improved by getting only the Note fields (field API parameter)
-    airtableApiGet(apikey, "", "", function(response_data){
+    getfullestAirtableData("", "", function(response_data){
+   // airtableApiGet(apikey, "", "", function(response_data){
 
         // Init vars and get total number of records to loop
         var count = 0;
@@ -464,7 +611,8 @@ function getVisionData(apikey){
     var visioncountarray = createDataStructure(visiontypesarray.length);
 
     // Get table and treat it
-    airtableApiGet(apikey, "", "", function(response_data){
+    getfullestAirtableData("", "", function(response_data){
+    //airtableApiGet(apikey, "", "", function(response_data){
 
         var records_array = response_data.data.records;
 
